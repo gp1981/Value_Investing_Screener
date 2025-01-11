@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # Value_Investing_Screener
 
 This repository includes a library to use [Financial Modeling
