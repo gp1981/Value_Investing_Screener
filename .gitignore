@@ -33,7 +33,8 @@ vignettes/*.pdf
 *_cache/
 /cache/
 
-# html output
+# html output & other files
+*.code-workspace
 *.html
 
 # Temporary files created by R markdown
