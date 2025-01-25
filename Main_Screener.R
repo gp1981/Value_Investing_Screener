@@ -10,7 +10,7 @@
 source('Functions/Setup.R')         # Sourcing necessary libraries
 
 # 02 - Inputs required ----
-last_business_date <-as.Date("2025-01-17") # update here the last business date 
+last_business_date <-as.Date("2025-01-24") # update here the last business date 
 period <- "quarter"
 period_limit <- 48
 date_filename <- gsub("-", "", last_business_date)
