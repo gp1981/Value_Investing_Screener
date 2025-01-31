@@ -34,31 +34,39 @@ DataFrame_all_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
     detach("package:plyr", unload = TRUE)
   }
   
-  ## 02.2.1 - Ranking Return On Capital and Calculating Average ----
+  ## 02.1.1 - Ranking Return On Capital and Calculating Average ----
   DF_all_FQ <- ROC_EY %>%
     filter(!is.na(Return.On.Capital) & is.finite(Return.On.Capital)) %>%
-    group_by(quarter) %>%
-    arrange(desc(Return.On.Capital)) %>%
+    group_by(Ticker) %>%  # Group by Ticker for correct trailing mean calculation
+    arrange(Ticker, quarter) %>%  # Ensure quarters are ordered from oldest to most recent
     mutate(
-      Rank.Return.On.Capital = dplyr::row_number(),  # Rank within each ticker
-      Avg.Return.On.Capital = mean(Return.On.Capital, na.rm = TRUE)  # Average across all available periods
+      Rolling_Avg_Return.On.Capital = zoo::rollapply(
+        Return.On.Capital, 
+        width = seq_along(Return.On.Capital),  # Use seq_along to make the window dynamic per row
+        FUN = mean, 
+        na.rm = TRUE, 
+        align = "right"  # Trailing average up to the current quarter
+      )
     ) %>%
-    select(Ticker, date, quarter, year, Rank.Return.On.Capital, Avg.Return.On.Capital, Return.On.Capital, everything()) %>% 
+    arrange(Ticker, desc(date)) %>% 
+    select(Ticker, date, quarter, year,  Rolling_Avg_Return.On.Capital, Return.On.Capital, everything()) %>%
     ungroup()
   
-  ## 02.2.1 - Ranking Return On Capital and Calculating Average ----
-  DF_all_FQ <- DF_all_FQ %>%
-    filter(!is.na(Return.On.Capital) & is.finite(Return.On.Capital)) %>%
-    group_by(Ticker) %>%
-    arrange(desc(Return.On.Capital)) %>%
-    mutate(
-      Rank.Return.On.Capital = dplyr::row_number(),  # Rank within each ticker
-      Avg.Return.On.Capital = mean(Return.On.Capital, na.rm = TRUE)  # Average across all available periods
-    ) %>%
-    select(Ticker, date, quarter, year, Rank.Return.On.Capital, Avg.Return.On.Capital, Return.On.Capital, everything())
+  ## 02.2.2 - Ranking Rolling avg. ROICC ----
+  DF_all_FQ <- DF_all_FQ %>% 
+    group_by(quarter) %>%
+    arrange(desc(Rolling_Avg_Return.On.Capital)) %>% 
+    mutate(Rank.Rolling_Avg_Return.On.Capital = dplyr::row_number()) %>% 
+    select(Ticker, date, quarter, year, Rank.Rolling_Avg_Return.On.Capital, Rolling_Avg_Return.On.Capital, everything())
   
+  ## 02.2.3 - Ranking ROIC ----
+  DF_all_FQ <- DF_all_FQ %>% 
+    group_by(quarter) %>%
+    arrange(desc(Return.On.Capital)) %>% 
+    mutate(Rank.Return.On.Capital = dplyr::row_number()) %>% 
+    select(Ticker, date, quarter, year, Rank.Return.On.Capital, Return.On.Capital, everything())
   
-  ## 02.2 - Ranking EY ----
+  ## 02.2.4 - Ranking EY ----
   DF_all_FQ <- DF_all_FQ %>% 
     filter(!is.na(Earnings.Yield.Greenblatt) & is.finite(Earnings.Yield.Greenblatt)) %>% 
     group_by(quarter) %>%
@@ -68,27 +76,34 @@ DataFrame_all_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
   
   ## 02.3 - Ranking CAGR_Full_Equity ----
   DF_all_FQ <- DF_all_FQ %>% 
-    filter(!is.na(Earnings.Yield.Greenblatt) & is.finite(Earnings.Yield.Greenblatt)) %>% 
+    filter(!is.na(CAGR.full.Equity) & is.finite(CAGR.full.Equity)) %>% 
     group_by(quarter) %>%
     arrange(desc(CAGR.full.Equity)) %>% 
     mutate(Rank.CAGR.full.Equity = dplyr::row_number()) %>% 
-    select(Ticker, date, quarter, year, Rank.CAGR.full.Equity, everything())
+    select(Ticker, date, quarter, year, Rank.CAGR.full.Equity, CAGR.full.Equity, everything())
   
   ## 02.4.1 - Ranking combined ranking EY and ROC ----
   DF_all_FQ <- DF_all_FQ %>% 
     mutate(Rank.Combined.EY_ROC.Greenblatt = Rank.Return.On.Capital + Rank.Earnings.Yield.Greenblatt) %>% 
     select(Ticker, date, quarter, year, Rank.Combined.EY_ROC.Greenblatt, everything())
   
-  ## 02.4.2 - Ranking combined ranking EY and ROC and CAGR.Full.Equity----
+  ## 02.4.2 - Ranking combined ranking EY and Rolling avg. ROC and CAGR.Full.Equity----
   DF_all_FQ <- DF_all_FQ %>% 
-    mutate(Rank.Combined.EY_ROC.Greenblatt = Rank.Return.On.Capital + Rank.Earnings.Yield.Greenblatt) %>% 
-    select(Ticker, date, quarter, year, Rank.Combined.EY_ROC.Greenblatt, everything())
+    mutate(Rank.Combined.EY_Roll_ROC_Full.Equity = Rank.Rolling_Avg_Return.On.Capital + 
+             Rank.Earnings.Yield.Greenblatt + Rank.CAGR.full.Equity) %>% 
+    select(Ticker, date, quarter, year, Rank.Combined.EY_Roll_ROC_Full.Equity, everything())
   
   DF_all_FQ <- DF_all_FQ %>% 
     group_by(quarter) %>%
     arrange(Rank.Combined.EY_ROC.Greenblatt) %>% 
     mutate(ID_Rank.Combined.EY_ROC.Greenblatt = dplyr::row_number()) %>% 
     select(ID_Rank.Combined.EY_ROC.Greenblatt, everything())
+  
+  DF_all_FQ <- DF_all_FQ %>% 
+    group_by(quarter) %>%
+    arrange(Rank.Combined.EY_Roll_ROC_Full.Equity) %>% 
+    mutate(ID_Rank.Combined.EY_Roll_ROC_Full.Equity = dplyr::row_number()) %>% 
+    select(ID_Rank.Combined.EY_Roll_ROC_Full.Equity, everything())
   
   # 03 - Ranking by ROA PE -----------------------------------------------------
   
