@@ -8,7 +8,7 @@
 
 DataFrame_last_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
   
-  # 01 - Filtering by mktcap and sectors ------------------------------------
+ # 01 - Filtering by mktcap and sectors ------------------------------------
   
   ## 01.1 - Define the number of last useful Fiscal Quarters ----
   
@@ -28,17 +28,28 @@ DataFrame_last_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
   Last.Quarters <- Last.Quarters %>% 
     filter(row_number() >= (n() - 3))
   
-  # Filter the dataframe based on specified conditions
-  
-  DF_last_FQ <- ROC_EY %>%
-    group_by(Ticker) %>%
-    arrange(desc(date)) %>% 
-    slice(1) %>% 
-    filter(
-      quarter >= as.Date(Last.Quarters$quarter[1]) & quarter <= as.Date(Last.Quarters$quarter[4])
-    ) %>%
-    select(Ticker, year, quarter, date, companyName, industry, sector, Return.On.Capital, Earnings.Yield.Greenblatt, everything())
-  
+  # Before filtering ROC_EY, check if at least 4 quarters exist:
+  if (nrow(Last.Quarters) >= 4) {
+    DF_last_FQ <- ROC_EY %>%
+      group_by(Ticker) %>%
+      arrange(desc(date)) %>% 
+      filter(
+        quarter >= as.Date(Last.Quarters$quarter[4]) & quarter <= as.Date(Last.Quarters$quarter[1])
+      ) %>%
+      select(Ticker, year, quarter, date, companyName, industry, sector, 
+             Return.On.Capital, Earnings.Yield.Greenblatt, everything())
+  } else {
+    warning("Less than 4 quarters available. Adjusting filter criteria.")
+    
+    DF_last_FQ <- ROC_EY %>%
+      group_by(Ticker) %>%
+      arrange(desc(date)) %>% 
+      filter(
+        quarter >= min(Last.Quarters$quarter) & quarter <= max(Last.Quarters$quarter)
+      ) %>%
+      select(Ticker, year, quarter, date, companyName, industry, sector, 
+             Return.On.Capital, Earnings.Yield.Greenblatt, everything())
+  }  
   # 02 - Greenblatt Ranking --------------------------------------------------
   
   # Create auxiliary ranking column for grouping purpose
