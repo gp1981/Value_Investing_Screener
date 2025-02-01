@@ -26,15 +26,17 @@ DataFrame_last_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
   
   # Filter the last 4 quarters
   Last.Quarters <- Last.Quarters %>% 
-    filter(row_number() >= (n() - 3))
+    filter(row_number() >= (n() - 3)) %>% 
+    arrange(desc(quarter))
   
   # Before filtering ROC_EY, check if at least 4 quarters exist:
   if (nrow(Last.Quarters) >= 4) {
     DF_last_FQ <- ROC_EY %>%
       group_by(Ticker) %>%
       arrange(desc(date)) %>% 
+      slice(1) %>% 
       filter(
-        quarter >= as.Date(Last.Quarters$quarter[4]) & quarter <= as.Date(Last.Quarters$quarter[1])
+        quarter > as.Date(Last.Quarters$quarter[4]) & quarter <= as.Date(Last.Quarters$quarter[1])
       ) %>%
       select(Ticker, year, quarter, date, companyName, industry, sector, 
              Return.On.Capital, Earnings.Yield.Greenblatt, everything())
@@ -44,12 +46,14 @@ DataFrame_last_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
     DF_last_FQ <- ROC_EY %>%
       group_by(Ticker) %>%
       arrange(desc(date)) %>% 
+      slice(1) %>% 
       filter(
-        quarter >= min(Last.Quarters$quarter) & quarter <= max(Last.Quarters$quarter)
+        quarter > min(Last.Quarters$quarter) & quarter <= max(Last.Quarters$quarter)
       ) %>%
       select(Ticker, year, quarter, date, companyName, industry, sector, 
              Return.On.Capital, Earnings.Yield.Greenblatt, everything())
   }  
+  
   # 02 - Greenblatt Ranking --------------------------------------------------
   
   # Create auxiliary ranking column for grouping purpose
