@@ -65,8 +65,8 @@ ROC_EY_v1_CACL <- FCF_Negative(ROC_EY_v1_CACL)
 ROC_EY_v1_CACL <- Multipliers(ROC_EY_v1_CACL)
 
 # 05 - Last 4 Fiscal Quarters (FQ) ----
+DF_all_FQ <- DataFrame_all_FQ(ROC_EY_v1_CACL, mktCap_limit_lower_M, country)
 # DF_last_FQ <- DataFrame_last_FQ(ROC_EY_v1_CACL, mktCap_limit_lower_M, country)
-DF_last_FQ <- DataFrame_last_FQ(ROC_EY_v1_CACL, mktCap_limit_lower_M, country)
 
 ## 05.1 - Match with data from Greenblatt Top 30-50 ----
 DF_last_FQ_G <- Add_Top_Greenblatt(DF_last_FQ, last_business_date, mktCap_limit_lower_M, mktCap_limit_upper_M, mktCap_step)
