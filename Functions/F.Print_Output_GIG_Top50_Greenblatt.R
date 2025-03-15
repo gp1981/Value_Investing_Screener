@@ -16,15 +16,15 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
   # Assign output categories based on specific conditions
   DF_last_FQ_GIG_Output_Top50_Greenblatt <- DF_last_FQ_GIG_Output_Top50_Greenblatt %>% 
     mutate(Output = dplyr::case_when(
-      Current.ratio >= 2 & 
-        Acid.ratio >= 1 & 
-        Capital.Structure.E_over_D >= 3 & 
-        Capital.Structure.D_over_A <= 0.2 ~ "GREEN",
+      quickRatioTTM >= 2 & 
+        cashRatioTTM >= 1 & 
+        debtToEquityTTM <= 0.33 & 
+        debtToAssetsTTM <= 0.2 ~ "GREEN",
       
-      Current.ratio >= 1 & 
-        Acid.ratio >= 0.3 & 
-        Capital.Structure.E_over_D >= 1 &
-        Capital.Structure.D_over_A <= 0.35 ~ "YELLOW",
+      quickRatioTTM >= 1 & 
+        cashRatioTTM >= 0.3 & 
+        debtToEquityTTM <= 1 &
+        debtToAssetsTTM <= 0.35 ~ "YELLOW",
         
       TRUE ~ "RED"
     )) %>% 
@@ -40,7 +40,7 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
            pbRatioTTM, Price_over_Net.Book.Value, CAGR.full.Equity, no.quarters.FCF_negative_ratio, 
            Equity_Net_premiumToFCF, debtToEquityTTM, Capital.Structure.E_over_D, 
            debtToAssetsTTM, Capital.Structure.D_over_A, longTermDebtToCapitalizationTTM, Acid.ratio_Cash, 
-           Acid.ratio, Current.ratio, currentRatioTTM, Net.Book.Value.per.Share, Net.Current.Asset.Value.per.Share,
+           quickRatioTTM, currentRatioTTM, Net.Book.Value.per.Share, Net.Current.Asset.Value.per.Share,
            Net.Cash.Asset.Value.per.Share, Liq.Value.per.Share,  MoS_Ratio, everything()) %>% 
     arrange(ID_Rank.Combined.EY_ROC.Greenblatt)
   
