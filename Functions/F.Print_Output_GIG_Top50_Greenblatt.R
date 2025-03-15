@@ -17,12 +17,12 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
   DF_last_FQ_GIG_Output_Top50_Greenblatt <- DF_last_FQ_GIG_Output_Top50_Greenblatt %>% 
     mutate(Output = dplyr::case_when(
       Current.ratio >= 2 & 
-        Acid.ratio_Cash >= 1 & 
+        Acid.ratio >= 1 & 
         Capital.Structure.E_over_D >= 3 & 
         Capital.Structure.D_over_A <= 0.2 ~ "GREEN",
       
       Current.ratio >= 1 & 
-        Acid.ratio_Cash >= 0.3 & 
+        Acid.ratio >= 0.3 & 
         Capital.Structure.E_over_D >= 1 &
         Capital.Structure.D_over_A <= 0.35 ~ "YELLOW",
         
