@@ -10,7 +10,7 @@
 source('Functions/Setup.R')         # Sourcing necessary libraries
 
 # 02 - Inputs required ----
-last_business_date <-as.Date("2025-01-31") # update here the last business date 
+last_business_date <-as.Date("2025-04-25") # update here the last business date 
 period <- "quarter"
 period_limit <- 48
 date_filename <- gsub("-", "", last_business_date)
@@ -80,7 +80,7 @@ Export_excel_DF_output(DF_last_FQ_Output_GIG_Full_List_Greenblatt,DF_last_FQ_GIG
 ## 06.1 - Historical ----
 ROC_EY_v1_CACL_Plot <- Plot.Hist(df = ROC_EY_v1_CACL, 
                                  fundamentals = "Returns & Margins", 
-                                 input_Tickers = "AAPL")
+                                 input_Tickers = "RIO")
 
 
 

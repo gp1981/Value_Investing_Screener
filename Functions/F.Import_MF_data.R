@@ -112,14 +112,21 @@ Import_MF_data <- function(last_business_date, mktCap_limit_lower_M, mktCap_limi
 extract_company_data <- function(session, last_business_date, MinimumMarketCap, TopGreenblatt) {
   year <- format(last_business_date, "%Y")
   
-  company_data <- session %>%
-    html_nodes("table.screeningdata tbody tr") %>%
+  table <- session %>% html_nodes("table.screeningdata tbody")
+  if (length(table) == 0) {
+    message("No data available for market cap: ", MinimumMarketCap)
+    return(data.frame())  # Return empty data frame
+  }
+  
+  company_data <- table %>%
+    html_nodes("tr") %>%
     map_df(~{
       tds <- html_nodes(.x, "td")
+      if (length(tds) < 5) return(data.frame())  # Skip invalid rows
       data.frame(
         Company_Name = html_text(tds[1]),
         Ticker = html_text(tds[2]),
-        Market_Cap_Millions = gsub(",", "", html_text(tds[3]), fixed = TRUE), # Remove commas
+        Market_Cap_Millions = gsub(",", "", html_text(tds[3]), fixed = TRUE),
         Price_From = html_text(tds[4]),
         Most_Recent_Quarter_Data = html_text(tds[5]),
         threshold_mktCap = MinimumMarketCap,
@@ -128,3 +135,4 @@ extract_company_data <- function(session, last_business_date, MinimumMarketCap, 
       )
     })
 }
+
