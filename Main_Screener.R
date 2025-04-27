@@ -15,11 +15,11 @@ period <- "quarter"
 period_limit <- 48
 date_filename <- gsub("-", "", last_business_date)
 # Lower limit market cap for Magic Formula
-mktCap_limit_lower_M <- 1000
+marketCap_limit_lower_M <- 1000
 # Upper limit market cap for Magic Formula
-mktCap_limit_upper_M <- 20000
+marketCap_limit_upper_M <- 20000
 # Market cap steps to retrieve data from magic formula
-mktCap_step <- 100
+martketCap_step <- 100
 
 # 03 - API Download  ----
 # Store the API key securely (you only need to do this once)
@@ -27,21 +27,19 @@ mktCap_step <- 100
 
 # Retrieve the API key
 API_Key <- keyring::key_get("API_FMP_KEY")
-Stock_List_data<-API_StockList_US(API_Key)
-Stock_List_data_Worldwide<-API_StockList(API_Key)
-DF_SP500_all_FQ <- API_SP500_Hist(API_Key)
+Stock_List_data<-API_StockList(API_Key)
 
 ## 03.1 - Export stock list ----
-Export_excel_StockList_data(Stock_List_data, Stock_List_data_Worldwide)
+Export_excel_StockList_data(Stock_List_data)
 
 ## 03.2 - Retrieve companies details and filter companies suitable for Magic Formula ----
-country <- c("US", "CA", "EU", "GB")
 Stock_List_data <- API_Profile(Stock_List_data, API_Key)
 save(Stock_List_data, file = paste0("Output/Data/Stock_List_data_", date_filename, ".RData"), compress = "bzip2")
-Stock_List_data <- MF_Filter(Stock_List_data, country)
+country <- c("US", "CA", "EU", "GB")
+Stock_List_data <- MF_Filter(Stock_List_data, country, marketCap_limit_lower_M)
 
 ## 03.2 - Retrieve companies fundamentals ----
-FinancialsMetricsProfile <- API_QFMP(Stock_List_data,API_Key,period, period_limit)
+FinancialsMetricsProfile <- API_QFMP(Stock_List_data[1:3,],API_Key,period, period_limit)
 save(FinancialsMetricsProfile, file = paste0("Output/Data/", date_filename, ".RData"), compress = "bzip2")
 
 # 04 - Greenblatt's ranking Calculation ----

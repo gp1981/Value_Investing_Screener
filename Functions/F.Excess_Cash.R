@@ -12,12 +12,12 @@ Excess_Cash <- function(DF) {
   median.cash.industry <- DF %>%
     group_by(year, industry) %>%
     filter(
-      !is.na(as.numeric(cashAndShortTermInvestments)),
-      !is.na(as.numeric(revenue)),
-      !as.numeric(revenue)<=0
+      !is.na(cashAndShortTermInvestments),
+      !is.na(revenue),
+      revenue<=0
     ) %>%
     dplyr::summarise(
-      median.cash_over_revenue = median(as.numeric(cashAndShortTermInvestments, na.rm = TRUE) / as.numeric(revenue, na.rm = TRUE), na.rm = TRUE),
+      median.cash_over_revenue = median(cashAndShortTermInvestments / revenue, na.rm = TRUE),
       count.stocks.industry = n()
     )
   
@@ -28,20 +28,21 @@ Excess_Cash <- function(DF) {
   DF <- DF %>%
     mutate(
       Excess.Cash = case_when(
-        as.numeric(cashAndShortTermInvestments) > as.numeric(cashAndCashEquivalents) ~ as.numeric(cashAndShortTermInvestments) - as.numeric(cashAndCashEquivalents) - (as.numeric(dividendsPaid) + as.numeric(commonStockRepurchased)),
-        as.numeric(cashAndShortTermInvestments) <= as.numeric(cashAndCashEquivalents) & as.numeric(revenue) > 0 ~ as.numeric(revenue) * 0.05,
+        cashAndShortTermInvestments > cashAndCashEquivalents ~ cashAndShortTermInvestments - cashAndCashEquivalents - 
+          (commonDividendsPaid + preferredDividendsPaid + commonStockRepurchased),
+        cashAndShortTermInvestments <= cashAndCashEquivalents & revenue > 0 ~ revenue * 0.05,
         TRUE ~ 0
       )
     ) %>%
     mutate(
-      Cash_ST.Industry.Benchmark = median.cash_over_revenue * as.numeric(revenue),
-      Excess.Cash.Industry.Benchmark = as.numeric(cashAndShortTermInvestments, na.rm = TRUE) - as.numeric(Cash_ST.Industry.Benchmark, na.rm = TRUE)
+      Cash_ST.Industry.Benchmark = median.cash_over_revenue * revenue,
+      Excess.Cash.Industry.Benchmark = cashAndShortTermInvestments - Cash_ST.Industry.Benchmark
     ) %>%
     mutate(
       Excess.Cash.2 = case_when(
-        as.numeric(cashAndShortTermInvestments) > as.numeric(cashAndCashEquivalents) ~ Excess.Cash,
-        Excess.Cash.Industry.Benchmark < as.numeric(cashAndShortTermInvestments) & Excess.Cash.Industry.Benchmark > 0 ~ Excess.Cash.Industry.Benchmark,
-        as.numeric(revenue) > 0 ~ as.numeric(revenue) * 0.05,
+        cashAndShortTermInvestments > cashAndCashEquivalents ~ Excess.Cash,
+        Excess.Cash.Industry.Benchmark < cashAndShortTermInvestments & Excess.Cash.Industry.Benchmark > 0 ~ Excess.Cash.Industry.Benchmark,
+        revenue > 0 ~ revenue * 0.05,
         TRUE ~ 0
       )
     ) %>% 

@@ -14,27 +14,23 @@
 API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   
   # Create API URLs for various calls to collect Financial Statements
-  API_IncomeStatement_path_base <- 'https://financialmodelingprep.com/api/v3/income-statement/'
-  API_BalanceSheet_path_base <- 'https://financialmodelingprep.com/api/v3/balance-sheet-statement/'
-  API_CashFlow_path_base <- 'https://financialmodelingprep.com/api/v3/cash-flow-statement/'
-  API_KeyMetrics_TTM_path_base <- 'https://financialmodelingprep.com/api/v3/key-metrics-ttm/'
-  API_KeyMetrics_path_base <- 'https://financialmodelingprep.com/api/v3/key-metrics/'
-  API_Ratios_TTM_path_base <- 'https://financialmodelingprep.com/api/v3/ratios-ttm/'
-  API_Ratios_path_base <- 'https://financialmodelingprep.com/api/v3/ratios/'
-  API_Shares_Float <- 'https://financialmodelingprep.com/api/v4/historical/shares_float?symbol='
+  API_IncomeStatement_path_base <- 'https://financialmodelingprep.com/stable/income-statement?symbol='
+  API_BalanceSheet_path_base <- 'https://financialmodelingprep.com/stable/balance-sheet-statement?symbol='
+  API_CashFlow_path_base <- 'https://financialmodelingprep.com/stable/cash-flow-statement?symbol='
+  API_KeyMetrics_TTM_path_base <- 'https://financialmodelingprep.com/stable/key-metrics-ttm?symbol='
+  API_KeyMetrics_path_base <- 'https://financialmodelingprep.com/stable/key-metrics?symbol='
+  API_Ratios_TTM_path_base <- 'https://financialmodelingprep.com/stable/ratios-ttm?symbol='
+  API_Ratios_path_base <- 'https://financialmodelingprep.com/stable/ratios?symbol='
+  API_Shares_Float <- 'https://financialmodelingprep.com/stable/shares-float?symbol='
   
   if (period == "quarter") {
-    API_IncomeStatement_path_suffix <- '?period='
-    API_BalanceSheet_path_suffix <- '?period='
-    API_CashFlow_path_suffix <- '?period='
-    API_KeyMetrics_path_suffix <- '?period='
-    API_Ratios_path_suffix <- '?period='
+    API_IncomeStatement_path_suffix <- '&period='
+    API_BalanceSheet_path_suffix <- '&period='
+    API_CashFlow_path_suffix <- '&period='
   } else {
     API_IncomeStatement_path_suffix <- ''
     API_BalanceSheet_path_suffix <- ''
     API_CashFlow_path_suffix <- ''
-    API_KeyMetrics_path_suffix <- ''
-    API_Ratios_path_suffix <- ''
   }
   
   # Initialize lists to store data
@@ -58,10 +54,10 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
     API_IncomeStatement_path <- paste0(API_IncomeStatement_path_base, ticker, API_IncomeStatement_path_suffix, period,  '&limit=', period_limit, '&apikey=', API_Key)
     API_BalanceSheet_path <- paste0(API_BalanceSheet_path_base, ticker, API_BalanceSheet_path_suffix, period, '&limit=', period_limit, '&apikey=', API_Key)
     API_CashFlow_path <- paste0(API_CashFlow_path_base, ticker, API_CashFlow_path_suffix, period, '&limit=', period_limit, '&apikey=', API_Key)
-    API_KeyMetrics_TTM_path <- paste0(API_KeyMetrics_TTM_path_base, ticker, '?apikey=', API_Key)
-    API_KeyMetrics_path <- paste0(API_KeyMetrics_path_base, ticker,API_KeyMetrics_path_suffix, period, '&limit=', period_limit, '&apikey=', API_Key)
-    API_Ratios_TTM_path <- paste0(API_Ratios_TTM_path_base, ticker, '?apikey=', API_Key)
-    API_Ratios_path <- paste0(API_Ratios_path_base, ticker, API_Ratios_path_suffix, period, '&limit=', period_limit, '&apikey=', API_Key)
+    API_KeyMetrics_TTM_path <- paste0(API_KeyMetrics_TTM_path_base, ticker, '&apikey=', API_Key)
+    API_KeyMetrics_path <- paste0(API_KeyMetrics_path_base, ticker, '&limit=', period_limit, '&apikey=', API_Key)
+    API_Ratios_TTM_path <- paste0(API_Ratios_TTM_path_base, ticker, '&apikey=', API_Key)
+    API_Ratios_path <- paste0(API_Ratios_path_base, ticker, '&limit=', period_limit, '&apikey=', API_Key)
     API_Shares_Float_path <- paste0(API_Shares_Float, ticker, '&apikey=', API_Key)
     
     result <- list(
@@ -166,19 +162,32 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   if ("symbol" %in% colnames(CF)) {
     CF <- CF %>% rename(Ticker = symbol)
   }
-  if ("symbol" %in% colnames(KeyMetrics_TTM)) {
+  if (all(c("symbol", "Ticker") %in% colnames(KeyMetrics_TTM))) {
+    KeyMetrics_TTM <- KeyMetrics_TTM %>% select(-symbol)
+  } else if ("symbol" %in% colnames(KeyMetrics_TTM)) {
     KeyMetrics_TTM <- KeyMetrics_TTM %>% rename(Ticker = symbol)
   }
-  if ("symbol" %in% colnames(KeyMetrics)) {
+  if (all(c("symbol", "Ticker") %in% colnames(KeyMetrics))) {
+    KeyMetrics <- KeyMetrics %>% select(-symbol)
+  } else if ("symbol" %in% colnames(KeyMetrics)) {
     KeyMetrics <- KeyMetrics %>% rename(Ticker = symbol)
   }
-  if ("symbol" %in% colnames(Ratios_TTM)) {
+  if (all(c("symbol", "Ticker") %in% colnames(Ratios_TTM))) {
+    Ratios_TTM <- Ratios_TTM %>% select(-symbol)
+  } else if ("symbol" %in% colnames(Ratios_TTM)) {
     Ratios_TTM <- Ratios_TTM %>% rename(Ticker = symbol)
+  }
+  if (all(c("symbol", "Ticker") %in% colnames(Ratios))) {
+    Ratios <- Ratios %>% select(-symbol)
+  } else if ("symbol" %in% colnames(Ratios)) {
+    Ratios <- Ratios %>% rename(Ticker = symbol)
   }
   if ("symbol" %in% colnames(Ratios)) {
     Ratios <- Ratios %>% rename(Ticker = symbol)
   }
-  if ("symbol" %in% colnames(Shares_Float)) {
+  if (all(c("symbol", "Ticker") %in% colnames(Shares_Float))) {
+    Shares_Float <- Shares_Float %>% select(-symbol)
+  } else if ("symbol" %in% colnames(Shares_Float)) {
     Shares_Float <- Shares_Float %>% rename(Ticker = symbol)
   }
   
