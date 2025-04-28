@@ -22,15 +22,18 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   API_Ratios_TTM_path_base <- 'https://financialmodelingprep.com/stable/ratios-ttm?symbol='
   API_Ratios_path_base <- 'https://financialmodelingprep.com/stable/ratios?symbol='
   API_Shares_Float <- 'https://financialmodelingprep.com/stable/shares-float?symbol='
+  API_EV_base <- 'https://financialmodelingprep.com/stable/enterprise-values?symbol='
   
   if (period == "quarter") {
     API_IncomeStatement_path_suffix <- '&period='
     API_BalanceSheet_path_suffix <- '&period='
     API_CashFlow_path_suffix <- '&period='
+    API_EV_suffix <- "&period="
   } else {
     API_IncomeStatement_path_suffix <- ''
     API_BalanceSheet_path_suffix <- ''
     API_CashFlow_path_suffix <- ''
+    API_EV_suffix <- ''
   }
   
   # Initialize lists to store data
@@ -42,6 +45,7 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   Ratios_TTM <- list()
   Ratios <- list()
   Shares_Float <- list()
+  EV<-list()
   
   total_stocks <- length(Stock_List_data$Ticker)
   i <- 1
@@ -59,6 +63,8 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
     API_Ratios_TTM_path <- paste0(API_Ratios_TTM_path_base, ticker, '&apikey=', API_Key)
     API_Ratios_path <- paste0(API_Ratios_path_base, ticker, '&limit=', period_limit, '&apikey=', API_Key)
     API_Shares_Float_path <- paste0(API_Shares_Float, ticker, '&apikey=', API_Key)
+    API_EV_path <- paste0(API_EV_base, ticker, API_EV_suffix, period,'&limit=', period_limit, '&apikey=', API_Key)
+    
     
     result <- list(
       IS = NULL,
@@ -122,6 +128,12 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
         result$Shares_Float <- data.frame(Shares_Float_temp)
       }
       
+      # Retrieve EV
+      EV_temp <- fromJSON(API_EV_path)
+      if (length(EV_temp) > 0) {
+        result$EV <- data.frame(EV_temp)
+      }
+      
     }, error = function(cond) {
       message(paste("API provided an error for this Ticker:", ticker))  # Use ticker instead of Ticker
       message("Here's the original error message:")
@@ -136,9 +148,7 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
     
     return(result)
   }
-  
 
-  
   # Use lapply to process all tickers
   results <- lapply(Stock_List_data$Ticker, process_ticker)
   
@@ -151,6 +161,7 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   Ratios_TTM  <- bind_rows(lapply(results, function(x) x$Ratios_TTM))
   Ratios  <- bind_rows(lapply(results, function(x) x$Ratios))
   Shares_Float  <- bind_rows(lapply(results, function(x) x$Shares_Float))
+  EV  <- bind_rows(lapply(results, function(x) x$EV))
   
   # Rename column "symbol" to "Ticker" for consistency
   if ("symbol" %in% colnames(IS)) {
@@ -190,6 +201,13 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   } else if ("symbol" %in% colnames(Shares_Float)) {
     Shares_Float <- Shares_Float %>% rename(Ticker = symbol)
   }
+  if (all(c("symbol", "Ticker") %in% colnames(EV))) {
+    EV <- EV %>% select(-symbol)
+  } else if ("symbol" %in% colnames(EV)) {
+    EV <- EV %>% rename(Ticker = symbol)
+  }
+  
+  EV <- EV %>%  rename(marketCap = marketCapitalization)
   
   FinancialsMetricsProfile <- list(
     IncomeStatement = IS,
@@ -200,6 +218,7 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
     Ratios_TTM = Ratios_TTM,
     Ratios = Ratios,
     Shares_Float = Shares_Float,
+    EV = EV,
     Stock_List_data = Stock_List_data
   )
   

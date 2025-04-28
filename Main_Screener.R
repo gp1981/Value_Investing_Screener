@@ -39,7 +39,7 @@ country <- c("US", "CA", "EU", "GB")
 Stock_List_data <- MF_Filter(Stock_List_data, country, marketCap_limit_lower_M)
 
 ## 03.2 - Retrieve companies fundamentals ----
-FinancialsMetricsProfile <- API_QFMP(Stock_List_data[1:3,],API_Key,period, period_limit)
+FinancialsMetricsProfile <- API_QFMP(Stock_List_data[4:8,],API_Key,period, period_limit)
 save(FinancialsMetricsProfile, file = paste0("Output/Data/", date_filename, ".RData"), compress = "bzip2")
 
 # 04 - Greenblatt's ranking Calculation ----

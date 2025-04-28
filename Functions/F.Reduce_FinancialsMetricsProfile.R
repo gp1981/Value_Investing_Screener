@@ -36,6 +36,7 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   DF_Ratios_TTM <- FinancialsMetricsProfile$Ratios_TTM
   DF_Ratios <- FinancialsMetricsProfile$Ratios
   DF_Shares_Float <- FinancialsMetricsProfile$Shares_Float
+  DF_EV <- FinancialsMetricsProfile$EV
   DF_Profile <- FinancialsMetricsProfile$Stock_List_data
   
   # --- Rename variables
@@ -56,15 +57,28 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     )
   }
   
-  if ("marketCap" %in% names(DF_KM)) {
-    DF_KM <- DF_KM %>% rename(
-      marketCap_KM = marketCap
+  if ("marketCap" %in% names(DF_EV)) {
+    DF_EV <- DF_EV %>% rename(
+      marketCap_EV = marketCap,
+      enterpriseValue_EV = enterpriseValue
+    )
+  }
+  
+  if ("date" %in% names(DF_Shares_Float)) {
+    DF_Shares_Float <- DF_Shares_Float %>% rename(
+      share_float_date = date
     )
   }
   
   if ("marketCap" %in% names(DF_Profile)) {
     DF_Profile <- DF_Profile %>% rename(
       marketCap_Profile = marketCap
+    )
+  }
+  
+  if ("marketCap" %in% names(DF_KM)) {
+    DF_KM <- DF_KM %>% rename(
+      marketCap_KM = marketCap
     )
   }
   
@@ -78,7 +92,7 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     left_join(DF_Ratios_TTM, by = intersect(names(DF_Ratios_TTM),names(DF_Profile)))
   
   DF_TTM <- DF_TTM %>% 
-    left_join(DF_KM_TTM, by = intersect(names(DF_KM_TTM),names(DF_TTM))) 
+    left_join(DF_KM_TTM, by = intersect(names(DF_KM_TTM),names(DF_TTM)))
   
   # --- Merge historical data ---
   DF <- DF_BS %>% 
@@ -90,6 +104,9 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   DF <- DF %>% 
     left_join(DF_KM, by = c("Ticker","date"))
   
+  DF <- DF %>% 
+    left_join(DF_EV, c("Ticker","date"))
+  
   # --- Merge historical and recent data ---
   DF <- DF %>% 
     left_join(DF_TTM, by = c("Ticker"))
@@ -100,9 +117,11 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   DF <- DF %>%
     group_by(Ticker) %>%
     arrange(desc(date), .by_group = TRUE) %>%
-    mutate(marketCap = if_else(row_number() == 1, marketCap_Profile, marketCap_KM)) %>%
+    mutate(marketCap = if_else(row_number() == 1, marketCap_Profile, marketCap_EV),
+           enterpriseValue = if_else(row_number() == 1, enterpriseValueTTM, enterpriseValue_EV) ) %>%
     ungroup() %>%
-    select(-marketCap_KM, -marketCap_Profile, -marketCap_TTM)
+    select(-marketCap_KM, -marketCap_Profile, -marketCap_TTM, -marketCap_EV,
+           -enterpriseValueTTM, -enterpriseValue_EV)
   
   # --- Clean up suffixes from joins ---
   DF <- DF %>%
