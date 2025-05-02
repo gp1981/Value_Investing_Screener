@@ -26,7 +26,7 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     if ("ipoDate" %in% names(df)) df$ipoDate <- as.Date(df$ipoDate)
     return(df)
   })
- 
+  
   # --- Extract individual DataFrames ---
   DF_IS <- FinancialsMetricsProfile$IncomeStatement
   DF_BS <- FinancialsMetricsProfile$BalanceSheet
@@ -122,7 +122,7 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     ungroup() %>%
     select(-marketCap_KM, -marketCap_Profile, -marketCap_TTM, -marketCap_EV,
            -enterpriseValueTTM, -enterpriseValue_EV)
-  
+
   # --- Clean up suffixes from joins ---
   DF <- DF %>%
     select(-matches("\\.y$")) %>%    # Remove duplicated .y columns
@@ -133,31 +133,5 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     mutate(across(where(is.integer), as.numeric)) %>%
     mutate(outstandingShares = as.numeric(outstandingShares)) %>%
     mutate(outstandingShares = if_else(is.na(outstandingShares), weightedAverageShsOutDil, outstandingShares))
-  
-  # --- Clean up repeated value ---
-  # Step 1: Identify columns that have constant values for each Ticker
-  cols_to_clean <- DF %>%
-    group_by(Ticker) %>%
-    summarise(across(everything(), ~ n_distinct(.) == 1), .groups = "drop") %>%
-    summarise(across(everything(), all)) %>%
-    pivot_longer(everything(), names_to = "col", values_to = "is_constant") %>%
-    filter(is_constant) %>%
-    pull(col)
-  
-  # Step 2: Remove columns you don't want to touch
-  cols_to_clean <- setdiff(cols_to_clean, c("Ticker", "date"))  # Don't touch grouping columns
-  
-  # Step 3: Apply the clean-up
-  DF <- DF %>%
-    group_by(Ticker) %>%
-    arrange(desc(date), .by_group = TRUE) %>%
-    mutate(across(cols_to_clean, ~if (is.character(.x)) {
-      if_else(row_number() == 1, .x, NA_character_)
-    } else if (inherits(.x, "Date")) {
-      if_else(row_number() == 1, .x, NA_Date_)
-    } else {
-      if_else(row_number() == 1, .x, NA_real_)
-    })) %>% 
-  ungroup()
   return(DF)
 }
