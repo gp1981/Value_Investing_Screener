@@ -10,7 +10,7 @@
 
 # OUTPUT: A list containing the Profile data for each company filtered
 
-MF_Filter <- function(Stock_List_data, country) {
+MF_Filter <- function(Stock_List_data, country, marketCap_limit_lower_M) {
   
   # List of European Union country abbreviations
   eu_countries <- c("AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", 
@@ -26,15 +26,13 @@ MF_Filter <- function(Stock_List_data, country) {
   Stock_List_data <- Stock_List_data %>%  
     filter(
       country %in% new_country, # Filter by provided country
-      sector != 'Financial Services', sector != 'Utilities - Regulated',
-      sector != 'Utilities',
       !str_detect(companyName, 'Depositary'),  # Remove American Depository Certificate
-      !str_detect(industry, "^(Bank|Insurance|Mortgage|REIT|Asset Management|Financial|Regulated)"), # Remove Bank, Insurance, and financials
-      as.numeric(mktCap) > as.numeric(mktCap_limit_lower_M)*1e06
-    )
-  
-  
-  
-  return(Stock_List_data)
-  
+      !str_detect(industry, "^(Bank|General Utilities|Insurance|Mortgage|REIT|Asset Management|Financial|Regulated)"), # Remove Bank, Insurance, and financials
+      marketCap > marketCap_limit_lower_M*1e06
+  )
+
+
+
+return(Stock_List_data)
+
 }

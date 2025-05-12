@@ -10,16 +10,16 @@
 source('Functions/Setup.R')         # Sourcing necessary libraries
 
 # 02 - Inputs required ----
-last_business_date <-as.Date("2025-04-25") # update here the last business date 
+last_business_date <-as.Date("2025-05-08") # update here the last business date 
 period <- "quarter"
 period_limit <- 48
 date_filename <- gsub("-", "", last_business_date)
 # Lower limit market cap for Magic Formula
-mktCap_limit_lower_M <- 1000
+marketCap_limit_lower_M <- 1000
 # Upper limit market cap for Magic Formula
-mktCap_limit_upper_M <- 20000
+marketCap_limit_upper_M <- 20000
 # Market cap steps to retrieve data from magic formula
-mktCap_step <- 100
+marketCap_step <- 100
 
 # 03 - API Download  ----
 # Store the API key securely (you only need to do this once)
@@ -27,18 +27,16 @@ mktCap_step <- 100
 
 # Retrieve the API key
 API_Key <- keyring::key_get("API_FMP_KEY")
-Stock_List_data<-API_StockList_US(API_Key)
-Stock_List_data_Worldwide<-API_StockList(API_Key)
-DF_SP500_all_FQ <- API_SP500_Hist(API_Key)
+Stock_List_data<-API_StockList(API_Key)
 
 ## 03.1 - Export stock list ----
-Export_excel_StockList_data(Stock_List_data, Stock_List_data_Worldwide)
+Export_excel_StockList_data(Stock_List_data)
 
 ## 03.2 - Retrieve companies details and filter companies suitable for Magic Formula ----
-country <- c("US", "CA", "EU", "GB")
 Stock_List_data <- API_Profile(Stock_List_data, API_Key)
 save(Stock_List_data, file = paste0("Output/Data/Stock_List_data_", date_filename, ".RData"), compress = "bzip2")
-Stock_List_data <- MF_Filter(Stock_List_data, country)
+country <- c("US", "CA", "EU", "GB")
+Stock_List_data <- MF_Filter(Stock_List_data, country, marketCap_limit_lower_M)
 
 ## 03.2 - Retrieve companies fundamentals ----
 FinancialsMetricsProfile <- API_QFMP(Stock_List_data,API_Key,period, period_limit)
@@ -52,7 +50,7 @@ ROC_EY_v1_CACL <- Reduce_FinancialsMetricsProfile(FinancialsMetricsProfile)
 ROC_EY_v1_CACL <- ROC_EY_Greenblatt_v1_CACL(ROC_EY_v1_CACL)
 
 ## 04.3 - Combine with S&P500 constituents ----
-ROC_EY_v1_CACL <- Combine_SP500(ROC_EY_v1_CACL, DF_SP500_all_FQ)
+# ROC_EY_v1_CACL <- Combine_SP500(ROC_EY_v1_CACL, DF_SP500_all_FQ)
 
 ## 04.4 - Calculate Ratios and Graham parameters ----
 ROC_EY_v1_CACL <- Ratios_Graham_MoS(ROC_EY_v1_CACL) 
@@ -69,7 +67,8 @@ ROC_EY_v1_CACL <- Multipliers(ROC_EY_v1_CACL)
 DF_last_FQ <- DataFrame_last_FQ(ROC_EY_v1_CACL, mktCap_limit_lower_M, country)
 
 ## 05.1 - Match with data from Greenblatt Top 30-50 ----
-DF_last_FQ_G <- Add_Top_Greenblatt(DF_last_FQ, last_business_date, mktCap_limit_lower_M, mktCap_limit_upper_M, mktCap_step)
+DF_last_FQ_G <- Add_Top_Greenblatt(DF_last_FQ, last_business_date, marketCap_limit_lower_M, 
+                                   marketCap_limit_upper_M, marketCap_step)
 
 ## 05.2 - Prepare output and export files ----
 DF_last_FQ_Output_GIG_Full_List_Greenblatt <- Print_Output_GIG_Top50_Greenblatt(DF_last_FQ_G)

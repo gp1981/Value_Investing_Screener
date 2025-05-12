@@ -28,9 +28,9 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
                                width = 4, FUN = sum, align = "left", fill = NA),
            Op_CashFlow.4FQ = rollapply(netCashProvidedByOperatingActivities,
                                        width = 4, FUN = sum, align = "left", fill = NA),
-           Fin.CashFlow.4FQ = rollapply(netCashUsedForInvestingActivites,
+           Fin.CashFlow.4FQ = rollapply(netCashProvidedByInvestingActivities,
                                         width = 4, FUN = sum, align = "left", fill = NA),
-           Inv_CashFlow.4Q = rollapply(netCashUsedProvidedByFinancingActivities,
+           Inv_CashFlow.4Q = rollapply(netCashProvidedByFinancingActivities,
                                        width = 4, FUN = sum, align = "left", fill = NA),
            Capex.4FQ = rollapply(capitalExpenditure,
                                  width = 4, FUN = sum, align = "left", fill = NA),
@@ -53,8 +53,8 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
     group_by(Ticker) %>% 
     arrange(desc(date)) %>% 
     mutate(
-      marketCap = ifelse(row_number() == 1, mktCap, marketCap),
-      enterpriseValue = ifelse(row_number() == 1, enterpriseValueTTM, enterpriseValue)
+      marketCap = ifelse(row_number() == 1, marketCap_Profile, marketCap_TTM),
+      enterpriseValue = ifelse(row_number() == 1, enterpriseValue_EV, enterpriseValueTTM)
       )
   
   DF <- DF %>% 

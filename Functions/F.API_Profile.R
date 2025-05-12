@@ -10,10 +10,10 @@
 
 # OUTPUT: A list containing the Profile data for each company in Stock_List_data
 
-API_Profile <- function(Stock_List_data, API_Key, period, period_limit) {
+API_Profile <- function(Stock_List_data, API_Key, countries) {
   
   # Base URL for API calls
-  API_Profile_path_base <- 'https://financialmodelingprep.com/api/v3/profile/'
+  API_Profile_path_base <- 'https://financialmodelingprep.com/stable/profile?symbol='
   
   # Initialize a list to store profile data
   Profile_list <- list()
@@ -26,7 +26,7 @@ API_Profile <- function(Stock_List_data, API_Key, period, period_limit) {
     cat("Processing Profile", ticker, "-", round(i / total_stocks * 100, 1), "% complete\n")
     
     # Construct API URL for the current ticker
-    API_Profile_path <- paste0(API_Profile_path_base, ticker, '?apikey=', API_Key)
+    API_Profile_path <- paste0(API_Profile_path_base, ticker, '&apikey=', API_Key)
     
     result <- list(
       Profile = NULL
@@ -64,6 +64,7 @@ API_Profile <- function(Stock_List_data, API_Key, period, period_limit) {
   if ("symbol" %in% colnames(combined_df)) {
     combined_df <- combined_df %>% rename(Ticker = symbol)
   }
-  
-  return(combined_df)
+ 
+   return(combined_df)
 }
+  
