@@ -37,7 +37,7 @@ Export_excel_DF_output <- function(DF1, DF2 ) {
   
   # Save workbook
   saveWorkbook(wb,
-               file = paste0("Output/Data/ALL_DF_last_FQ_GIG_", date_filename, "_", rep(mktCap_limit_lower_M), ".xlsx"),
+               file = paste0("Output/Data/ALL_DF_last_FQ_GIG_", date_filename, "_", rep(marketCap_limit_lower_M), ".xlsx"),
                overwrite = TRUE)
 }
 
@@ -61,7 +61,7 @@ Export_excel_MF_data <- function(DF1) {
     )
   # Save workbook
   saveWorkbook(wb,
-               file = paste0("Output/Data/MF_data_", date_filename, "_", rep(mktCap_limit_upper_M), ".xlsx"),
+               file = paste0("Output/Data/MF_data_", date_filename, "_", rep(marketCap_limit_upper_M), ".xlsx"),
                overwrite = TRUE)
   # Check https://cran.r-project.org/web/packages/openxlsx/openxlsx.pdf
 }

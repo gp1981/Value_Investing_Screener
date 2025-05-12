@@ -21,8 +21,8 @@ CAGR_Equity <- function(df){
       last_equity = last(totalStockholdersEquity),
       
       # Calculate cumulative sums for required fields up to each row
-      cum_dividends = cumsum(dividendsPaid),
-      cum_issued = cumsum(commonStockIssued),
+      cum_dividends = cumsum(commonDividendsPaid) + cumsum(preferredDividendsPaid),
+      cum_issued = cumsum(commonStockIssuance),
       cum_repurchased = cumsum(commonStockRepurchased),
       
       # Calculate full equity using the first value of totalStockholdersEquity

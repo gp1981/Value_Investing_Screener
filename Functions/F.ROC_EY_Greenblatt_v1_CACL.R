@@ -53,8 +53,8 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
     group_by(Ticker) %>% 
     arrange(desc(date)) %>% 
     mutate(
-      marketCap = ifelse(row_number() == 1, mktCap, marketCap),
-      enterpriseValue = ifelse(row_number() == 1, enterpriseValueTTM, enterpriseValue)
+      marketCap = ifelse(row_number() == 1, marketCap_Profile, marketCap_TTM),
+      enterpriseValue = ifelse(row_number() == 1, enterpriseValue_EV, enterpriseValueTTM)
       )
   
   DF <- DF %>% 

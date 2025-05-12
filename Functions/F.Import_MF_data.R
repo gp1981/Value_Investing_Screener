@@ -8,7 +8,7 @@ library(tidyverse)
 library(progress)
 library(openxlsx)
 
-Import_MF_data <- function(last_business_date, mktCap_limit_lower_M, mktCap_limit_upper_M, mktCap_step) {
+Import_MF_data <- function(last_business_date, marketCap_limit_lower_M, marketCap_limit_upper_M, marketCap_step) {
   
   # 1 - Login and open session ----------------------------------------------
   
@@ -40,9 +40,9 @@ Import_MF_data <- function(last_business_date, mktCap_limit_lower_M, mktCap_limi
   
   # Initialize progress bar
   pb <- progress_bar$new(format = "[:bar] :percent :elapsed", 
-                         total = length(seq(mktCap_limit_lower_M, 
-                                            mktCap_limit_upper_M, 
-                                            by = mktCap_step)
+                         total = length(seq(marketCap_limit_lower_M, 
+                                            marketCap_limit_upper_M, 
+                                            by = marketCap_step)
                          )
   )
   
@@ -50,7 +50,7 @@ Import_MF_data <- function(last_business_date, mktCap_limit_lower_M, mktCap_limi
   # 2 - Extract data --------------------------------------------------------
   
   # Loop through market cap thresholds
-  for (MinimumMarketCap in seq(mktCap_limit_lower_M, mktCap_limit_upper_M, by = mktCap_step)) {
+  for (MinimumMarketCap in seq(marketCap_limit_lower_M, marketCap_limit_upper_M, by = marketCap_step)) {
     # # Increment progress bar
     pb$tick()
     
@@ -69,7 +69,7 @@ Import_MF_data <- function(last_business_date, mktCap_limit_lower_M, mktCap_limi
     company_data_top50 <- extract_company_data(session, last_business_date, MinimumMarketCap, "Top50")
     
     # Merge company_data_top50 into company_data_top30 preserving the records in company_data_top30
-    company_data_merged <- merge(company_data_top30, company_data_top50, by = c("Company_Name", "Ticker", "Market_Cap_Millions", "Price_From", "Most_Recent_Quarter_Data", "threshold_mktCap", "TopGreenblatt"), all = TRUE)
+    company_data_merged <- merge(company_data_top30, company_data_top50, by = c("Company_Name", "Ticker", "Market_Cap_Millions", "Price_From", "Most_Recent_Quarter_Data", "threshold_marketCap", "TopGreenblatt"), all = TRUE)
     
     company_data_merged_unique <- company_data_merged %>%
       group_by(Company_Name) %>% 
@@ -87,7 +87,7 @@ Import_MF_data <- function(last_business_date, mktCap_limit_lower_M, mktCap_limi
   # Filter duplicate at higher threshold market cap
   company_data <- company_data %>%
     group_by(Company_Name) %>%
-    arrange(threshold_mktCap) %>%
+    arrange(threshold_marketCap) %>%
     distinct(Company_Name, .keep_all = TRUE) %>%
     ungroup()
   
@@ -129,7 +129,7 @@ extract_company_data <- function(session, last_business_date, MinimumMarketCap, 
         Market_Cap_Millions = gsub(",", "", html_text(tds[3]), fixed = TRUE),
         Price_From = html_text(tds[4]),
         Most_Recent_Quarter_Data = html_text(tds[5]),
-        threshold_mktCap = MinimumMarketCap,
+        threshold_marketCap = MinimumMarketCap,
         TopGreenblatt = TopGreenblatt,
         stringsAsFactors = FALSE
       )

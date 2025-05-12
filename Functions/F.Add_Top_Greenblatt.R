@@ -8,11 +8,11 @@
 
 library(readxl)
 
-Add_Top_Greenblatt <- function(df, last_business_date, mktCap_limit_lower_M, mktCap_limit_upper_M, mktCap_step) {
+Add_Top_Greenblatt <- function(df, last_business_date, marketCap_limit_lower_M, marketCap_limit_upper_M, marketCap_step) {
   
   # 01 - Data Loading and Merging -------------------------------------------
   
-  df1 <- Import_MF_data(last_business_date, mktCap_limit_lower_M, mktCap_limit_upper_M, mktCap_step)
+  df1 <- Import_MF_data(last_business_date, marketCap_limit_lower_M, marketCap_limit_upper_M, marketCap_step)
   
    # Rename columns, excluding a specific column
   prefix = "MF_"
@@ -26,9 +26,9 @@ Add_Top_Greenblatt <- function(df, last_business_date, mktCap_limit_lower_M, mkt
     left_join(df1, by = "Ticker")
 
   df2 <- df2 %>% 
-    mutate(mktCap_M = mktCap / 1e06,
-           MF_Threshold_mktCap_M = MF_threshold_mktCap) %>% 
-    select(Ticker,date, price, MF_TopGreenblatt, MF_Threshold_mktCap_M, -MF_threshold_mktCap,
+    mutate(marketCap_M = marketCap / 1e06,
+           MF_Threshold_marketCap_M = MF_threshold_marketCap) %>% 
+    select(Ticker,date, price, MF_TopGreenblatt, MF_Threshold_marketCap_M, -MF_threshold_marketCap,
           everything())
     
   

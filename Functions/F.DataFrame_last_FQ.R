@@ -104,7 +104,7 @@ DataFrame_last_FQ <- function(ROC_EY, mktCap_limit_lower_M,country) {
   ## 03.2 - Ranking by PE ----
   DF_last_FQ <- DF_last_FQ %>% 
     group_by(aux.rank) %>%
-    arrange(peRatioTTM) %>% 
+    arrange(priceToEarningsRatioTTM) %>% 
     mutate(Rank.PE.ratio = dplyr::row_number())
   
   ## 03.3 - Ranking combined ranking ROA and PE ----

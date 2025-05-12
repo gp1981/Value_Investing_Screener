@@ -87,6 +87,7 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
       share_float_date = date
     )
   }
+  
   # --- Merge TTM values ---
   DF_TTM <- DF_Profile %>%
     left_join(DF_Ratios_TTM, by = intersect(names(DF_Ratios_TTM),names(DF_Profile)))
@@ -114,14 +115,14 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   DF <- DF %>% 
     left_join(DF_Shares_Float, by = c("Ticker"))
   
-  DF <- DF %>%
-    group_by(Ticker) %>%
-    arrange(desc(date), .by_group = TRUE) %>%
-    mutate(marketCap = if_else(row_number() == 1, marketCap_Profile, marketCap_EV),
-           enterpriseValue = if_else(row_number() == 1, enterpriseValueTTM, enterpriseValue_EV) ) %>%
-    ungroup() %>%
-    select(-marketCap_KM, -marketCap_Profile, -marketCap_TTM, -marketCap_EV,
-           -enterpriseValueTTM, -enterpriseValue_EV)
+  # DF <- DF %>%
+  #   group_by(Ticker) %>%
+  #   arrange(desc(date), .by_group = TRUE) %>%
+  #   mutate(marketCap = if_else(row_number() == 1, marketCap_Profile, marketCap_EV),
+  #          enterpriseValue = if_else(row_number() == 1, enterpriseValueTTM, enterpriseValue_EV) ) %>%
+  #   ungroup() %>%
+  #   select(-marketCap_KM, -marketCap_Profile, -marketCap_TTM, -marketCap_EV,
+  #          -enterpriseValueTTM, -enterpriseValue_EV)
 
   # --- Clean up suffixes from joins ---
   DF <- DF %>%

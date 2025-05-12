@@ -77,7 +77,7 @@ Maintenance_CAPEX <- function(df) {
     
     # Step 4: Output Formatting
     # - Select specific columns for the final output.
-    select(Ticker, date, annualised.maintenance_capex, capitalExpenditure, industry, sector, SP500, everything())
+    select(Ticker, date, annualised.maintenance_capex, capitalExpenditure, industry, sector, everything())
   
   return(df)
 }

@@ -18,13 +18,13 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
     mutate(Output = dplyr::case_when(
       quickRatioTTM >= 2 & 
         cashRatioTTM >= 1 & 
-        debtToEquityTTM <= 0.33 & 
-        debtToAssetsTTM <= 0.2 ~ "GREEN",
+        debtToEquityRatioTTM <= 0.33 & 
+        debtToAssetsRatioTTM <= 0.2 ~ "GREEN",
       
       quickRatioTTM >= 1 & 
         cashRatioTTM >= 0.3 & 
-        debtToEquityTTM <= 1 &
-        debtToAssetsTTM <= 0.35 ~ "YELLOW",
+        debtToEquityRatioTTM <= 1 &
+        debtToAssetsRatioTTM <= 0.35 ~ "YELLOW",
         
       TRUE ~ "RED"
     )) %>% 
@@ -32,14 +32,14 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
     mutate(Enterprise.Value.IGVI.Op.Assets_M = Enterprise.Value.IGVI.Op.Assets / 1000000) %>%
     relocate(Enterprise.Value.IGVI.Op.Assets, .after = last_col()) %>% 
   
-    select(Output, Outlier.Revenue.ZScore, MF_TopGreenblatt, MF_Threshold_mktCap_M, Ticker, companyName, 
-           country, price, mktCap_M,ID_Rank.Combined.EY_ROC.Greenblatt,Enterprise.Value.IGVI.Op.Assets_M,
+    select(Output, Outlier.Revenue.ZScore, MF_TopGreenblatt, MF_Threshold_marketCap_M, Ticker, companyName, 
+           country, price, marketCap_M,ID_Rank.Combined.EY_ROC.Greenblatt,Enterprise.Value.IGVI.Op.Assets_M,
            Earnings.Yield.Greenblatt, Return.On.Capital, Earning.Power.per.Share.TTM,
            Owner.Earnings.Buffet.per.Share.TTM, Owner.Earnings.Buffet.IGVI.per.Share.TTM, 
-           Owner.Earnings.IGVI.per.Share.TTM, priceEarningsRatioTTM, priceBookValueRatioTTM, 
-           pbRatioTTM, Price_over_Net.Book.Value, CAGR.full.Equity, no.quarters.FCF_negative_ratio, 
-           Equity_Net_premiumToFCF, debtToEquityTTM, Capital.Structure.E_over_D, 
-           debtToAssetsTTM, Capital.Structure.D_over_A, longTermDebtToCapitalizationTTM, Acid.ratio_Cash, 
+           Owner.Earnings.IGVI.per.Share.TTM, priceToEarningsRatioTTM, priceToBookRatioTTM, 
+           Price_over_Net.Book.Value, CAGR.full.Equity, no.quarters.FCF_negative_ratio, 
+           Equity_Net_premiumToFCF, debtToEquityRatioTTM, Capital.Structure.E_over_D, 
+           debtToAssetsRatioTTM, Capital.Structure.D_over_A, longTermDebtToCapitalRatioTTM, Acid.ratio_Cash, 
            quickRatioTTM, currentRatioTTM, Net.Book.Value.per.Share, Net.Current.Asset.Value.per.Share,
            Net.Cash.Asset.Value.per.Share, Liq.Value.per.Share,  MoS_Ratio, everything()) %>% 
     arrange(ID_Rank.Combined.EY_ROC.Greenblatt)
