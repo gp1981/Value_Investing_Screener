@@ -11,10 +11,9 @@ Maintenance_CAPEX <- function(df) {
     group_by(Ticker) %>%
     arrange(desc(date)) %>%
     mutate(
-      # Reverse cumulative sum of capital expenditure and depreciation to ensure trailing values are from the oldest date.
-      total.capital_expenditure = rev(cumsum(rev(capitalExpenditure))),
-      total.depreciation_amortization = rev(cumsum(rev(depreciationAndAmortization)))
-    ) %>%
+      total.capital_expenditure = rev(cumsum(rev(coalesce(capitalExpenditure, 0)))),
+      total.depreciation_amortization = rev(cumsum(rev(coalesce(depreciationAndAmortization, 0)))),
+      ) %>%
     ungroup()
   
   # Step 2: Rolling Averages and Growth CAPEX Calculations
@@ -36,17 +35,13 @@ Maintenance_CAPEX <- function(df) {
       ),
       
       # Calculate the ratio to avg revenue.
-      avg_ratio.revenue = coalesce(revenue / avg_revenue,0),
-      
-      avg_ratio.revenue = ifelse(avg_ratio.revenue > 1, avg_ratio.revenue, 1),
-      
+      avg_ratio.revenue = pmax(coalesce(revenue / avg_revenue,0), 1),
+     
       # Calculate the difference in revenue between the first and last periods within the period_limit.
-      revenue_diff = rollapply(
-        revenue, width = period_limit, FUN = function(x) -1 * (last(x) - first(x)), align = "left", partial = TRUE
-      ),
-      
       # Set any negative revenue_diff to zero (representing no growth in revenue).
-      revenue_diff = ifelse(revenue_diff < 0, 0, revenue_diff),
+      revenue_diff = rollapply(
+        revenue, width = period_limit, FUN = function(x) max(0, -1 * (last(x) - first(x))), align = "left", partial = TRUE
+      ),
       
       # Compute growth CAPEX as the product of average ratio and revenue difference.
       growth_capex = avg_ratio.revenue_FixedAsset * revenue_diff,

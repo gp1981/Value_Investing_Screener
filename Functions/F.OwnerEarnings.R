@@ -17,32 +17,23 @@ OwnerEarnings <- function(df){
     mutate(
       
       # Calculate the cumulative sum of revenue, SG&A, R&D, other expenses, capex, depreciation, income tax, and full equity
-      sum_Revenue = rollapply(
-        revenue, width = period_limit, FUN = sum, align = "left", partial = TRUE),
+      sum_Revenue = rollapply(revenue, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sust_Revenue.TTM = rollapply(
-        revenue, width = 4, FUN = mean, align = "left", partial = TRUE),
+      sust_Revenue.TTM = rollapply(revenue, width = 4, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_SGA = rollapply(
-        sellingGeneralAndAdministrativeExpenses, width = period_limit, FUN = sum, align = "left", partial = TRUE),
+      sum_SGA = rollapply(sellingGeneralAndAdministrativeExpenses, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_RD = rollapply(
-        researchAndDevelopmentExpenses, width = period_limit, FUN = sum, align = "left", partial = TRUE),
+      sum_RD = rollapply(researchAndDevelopmentExpenses, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_Other_Expenses = rollapply(
-        otherExpenses, width = period_limit, FUN = sum, align = "left", partial = TRUE),
+      sum_Other_Expenses = rollapply(otherExpenses, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_Operating_Income = rollapply(
-        operatingIncome, width = period_limit, FUN = sum, align = "left", partial = TRUE), #<<< TO BE FIXED
+      sum_Operating_Income = rollapply(operatingIncome, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_Capex = rollapply(
-        capitalExpenditure, width = period_limit, FUN = sum, align = "left", partial = TRUE),
+      sum_Capex = rollapply(capitalExpenditure, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_Income_Tax = rollapply(
-        incomeTaxExpense, width = period_limit, FUN = sum, align = "left", partial = TRUE),
+      sum_Income_Tax = rollapply(incomeTaxExpense, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE),
       
-      sum_Income_Before_Tax = rollapply(
-        incomeBeforeTax, width = period_limit, FUN = sum, align = "left", partial = TRUE)
+      sum_Income_Before_Tax = rollapply(incomeBeforeTax, width = period_limit, FUN = function(x) sum(x, na.rm = TRUE), align = "left", partial = TRUE)
       
     ) %>% 
     ungroup()
@@ -90,7 +81,7 @@ OwnerEarnings <- function(df){
     arrange(desc(date)) %>% 
     mutate(
       Earning.Power.TTM = rollapply(Earning.Power,
-                                    width = 4, FUN = sum, align = "left", fill = NA)
+                                    width = 4, FUN = function(x) sum(x, na.rm = TRUE), align = "left", fill = NA)
     ) %>% 
     ungroup()
   
@@ -101,17 +92,17 @@ OwnerEarnings <- function(df){
       Earning.Power.per.Share.TTM = Earning.Power.TTM / outstandingShares,
       
       Owner.Earnings.Buffet.TTM = rollapply(Owner.Earnings.Buffet,
-                                            width = 4, FUN = sum, align = "left", fill = NA),
+                                            width = 4, FUN = function(x) sum(x, na.rm = TRUE), align = "left", fill = NA),
       
       Owner.Earnings.Buffet.per.Share.TTM = Owner.Earnings.Buffet.TTM / outstandingShares,
       
       Owner.Earnings.Buffet.IGVI.TTM = rollapply(Owner.Earnings.Buffet.IGVI,
-                                                 width = 4, FUN = sum, align = "left", fill = NA),
+                                                 width = 4, FUN = function(x) sum(x, na.rm = TRUE), align = "left", fill = NA),
       
       Owner.Earnings.Buffet.IGVI.per.Share.TTM = Owner.Earnings.Buffet.IGVI.TTM / outstandingShares,
       
       Owner.Earnings.IGVI.TTM = rollapply(Owner.Earnings.IGVI,
-                                          width = 4, FUN = sum, align = "left", fill = NA),
+                                          width = 4, FUN = function(x) sum(x, na.rm = TRUE), align = "left", fill = NA),
       
       Owner.Earnings.IGVI.per.Share.TTM = Owner.Earnings.IGVI.TTM / outstandingShares,
       

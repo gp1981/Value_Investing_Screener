@@ -17,7 +17,8 @@ FCF_Negative <- function(df){
     arrange(date) %>%  # Ensure data is sorted by date from oldest to latest
     mutate(
       # Cumulative count of negative free cash flow quarters
-      cumulative_negative_fc_quarters = cumsum(freeCashFlow < 0),
+      cumulative_negative_fc_quarters = cumsum(ifelse(is.na(freeCashFlow), FALSE, freeCashFlow < 0)),
+      
       
       # Cumulative count of total quarters (1, 2, 3, ...)
       cumulative_total_quarters = row_number(),

@@ -13,26 +13,26 @@ Multipliers <- function(df){
   
   df <- df %>%
     mutate(
-      MktCap_EV_IGVI.Op.Assets = marketCap / Enterprise.Value.IGVI.Op.Assets,
-      MktCap_EV = marketCap / enterpriseValue,
+      MarketCap_over_EV_IGVI.Op.Assets = marketCap_EV / Enterprise.Value.IGVI.Op.Assets,
+      MarketCap_over_EV = marketCap_EV / enterpriseValue_EV,
       
-      Debt_EV_IGVI.Op.Assets = totalDebt / Enterprise.Value.IGVI.Op.Assets,
-      Debt_EV = totalDebt / enterpriseValue,
+      Debt_over_EV_IGVI.Op.Assets = totalDebt / Enterprise.Value.IGVI.Op.Assets,
+      Debt_over_EV = totalDebt / enterpriseValue_EV,
       
-      CurrentAssets_EV_IGVI.Op.Assets = totalCurrentAssets / Enterprise.Value.IGVI.Op.Assets,
-      CurrentAssets_EV = totalCurrentAssets / enterpriseValue,
+      CurrentAssets_over_EV_IGVI.Op.Assets = totalCurrentAssets / Enterprise.Value.IGVI.Op.Assets,
+      CurrentAssets_over_EV = totalCurrentAssets / enterpriseValue_EV,
       
-      NonCurrentAssets_EV_IGVI.Op.Assets = totalNonCurrentAssets / Enterprise.Value.IGVI.Op.Assets,
-      NonCurrentAssets_EV = totalNonCurrentAssets / enterpriseValue,
+      NonCurrentAssets_over_EV_IGVI.Op.Assets = totalNonCurrentAssets / Enterprise.Value.IGVI.Op.Assets,
+      NonCurrentAssets_over_EV = totalNonCurrentAssets / enterpriseValue_EV,
       
-      TotalAssets_EV_IGVI.Op.Assets = totalAssets / Enterprise.Value.IGVI.Op.Assets,
-      totalAssets_EV = totalAssets / enterpriseValue,
+      TotalAssets_over_EV_IGVI.Op.Assets = totalAssets / Enterprise.Value.IGVI.Op.Assets,
+      totalAssets_over_EV = totalAssets / enterpriseValue_EV,
       
-      ExcessCash_EV_IGVI.Op.Assets = Excess.Cash / Enterprise.Value.IGVI.Op.Assets,
-      ExcessCash_EV = Excess.Cash / enterpriseValue,
+      ExcessCash_over_EV_IGVI.Op.Assets = Excess.Cash / Enterprise.Value.IGVI.Op.Assets,
+      ExcessCash_over_EV = Excess.Cash / enterpriseValue_EV,
       
-      NetWorkingCapital_EV_IGVI.Op.Assets = Net.Working.Capital / Enterprise.Value.IGVI.Op.Assets,
-      NetWorkingCapital_EV = Net.Working.Capital / enterpriseValue
+      NetWorkingCapital_over_EV_IGVI.Op.Assets = Net.Working.Capital / Enterprise.Value.IGVI.Op.Assets,
+      NetWorkingCapital_over_EV = Net.Working.Capital / enterpriseValue_EV
     ) 
 
   
