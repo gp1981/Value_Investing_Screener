@@ -99,8 +99,8 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   DF <- DF_BS %>% 
     left_join(DF_IS, by = intersect(names(DF_IS),names(DF_BS)))
   
-  DF <- DF %>% 
-    left_join(DF_CF, by = intersect(names(DF_CF),names(DF)))
+  DF <- DF_CF %>% 
+    left_join(DF)
   
   DF <- DF %>% 
     left_join(DF_KM, by = c("Ticker","date"))
