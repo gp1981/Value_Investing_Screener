@@ -17,16 +17,22 @@ CAGR_Equity <- function(df){
     group_by(Ticker) %>% 
     arrange(date) %>% # Ensure data is sorted by date
     mutate(
-      # Get the last (newest) value of totalStockholdersEquity
+      # Get the last (newest) values
       last_equity = last(totalStockholdersEquity),
+      last_totalDebt = coalesce(last(totalDebt),0),
+      
+      # Get the first (oldest) values
+      first_totalDebt = coalesce(first(totalDebt),0),
+      
       
       # Calculate cumulative sums for required fields up to each row
       cum_dividends = cumsum(coalesce(commonDividendsPaid, 0) + coalesce(preferredDividendsPaid, 0)),
       cum_issued = cumsum(coalesce(commonStockIssuance, 0)),
       cum_repurchased = cumsum(coalesce(commonStockRepurchased, 0)),
+      change_totalDebt = last_totalDebt - first_totalDebt,
       
       # Calculate full equity using the first value of totalStockholdersEquity
-      full_equity = last_equity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased
+      full_equity = last_equity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased - change_totalDebt
     ) %>%
     # Calculate CAGR
     mutate(
