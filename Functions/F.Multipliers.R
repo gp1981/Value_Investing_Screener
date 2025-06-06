@@ -45,6 +45,7 @@ Multipliers <- function(df){
       Owner.Earnings.Buffet.IGVI.per.Share.TTM,
       Owner.Earnings.IGVI.per.Share.TTM,
       CAGR.full.Equity,
+      CAGR.full.Equity_noDebt,
       no.quarters.FCF_negative_ratio,
       everything()
     )
