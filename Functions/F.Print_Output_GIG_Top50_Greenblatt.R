@@ -37,7 +37,7 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
            Earnings.Yield.Greenblatt, Return.On.Capital, Earning.Power.per.Share.TTM,
            Owner.Earnings.Buffet.per.Share.TTM, Owner.Earnings.Buffet.IGVI.per.Share.TTM, 
            Owner.Earnings.IGVI.per.Share.TTM, priceToEarningsRatioTTM, priceToBookRatioTTM, 
-           Price_over_Net.Book.Value, CAGR.full.Equity, no.quarters.FCF_negative_ratio, 
+           Price_over_Net.Book.Value, CAGR.full.Equity, CAGR.full.Equity_noDebt, no.quarters.FCF_negative_ratio, 
            Equity_Net_premiumToFCF, debtToEquityRatioTTM, Capital.Structure.E_over_D, 
            debtToAssetsRatioTTM, Capital.Structure.D_over_A, longTermDebtToCapitalRatioTTM, Acid.ratio_Cash, 
            quickRatioTTM, currentRatioTTM, Net.Book.Value.per.Share, Net.Current.Asset.Value.per.Share,
