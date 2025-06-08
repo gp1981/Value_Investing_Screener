@@ -100,7 +100,7 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     left_join(DF_IS, by = intersect(names(DF_IS),names(DF_BS)))
   
   DF <- DF %>% 
-    left_join(DF_CF, by = intersect(names(DF_CF),names(DF)))
+    left_join(DF_CF, by = c("Ticker","date"))
   
   DF <- DF %>% 
     left_join(DF_KM, by = c("Ticker","date"))
@@ -125,9 +125,17 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   #          -enterpriseValueTTM, -enterpriseValue_EV)
 
   # --- Clean up suffixes from joins ---
-  DF <- DF %>%
-    select(-matches("\\.y$")) %>%    # Remove duplicated .y columns
-    rename_with(~ gsub("\\.x$", "", .), matches("\\.x$"))  # Clean .x suffix
+  clean_join_suffixes <- function(df) {
+    df <- df %>% select(-matches("\\.y$"))
+    
+    cols_x <- names(df)[str_ends(names(df), "\\.x$")]
+    clean_names <- str_remove(cols_x, "\\.x$")
+    
+    df <- df %>% select(-any_of(clean_names))
+    df %>% rename_with(~ str_remove(., "\\.x$"), ends_with(".x"))
+  }
+  DF <- clean_join_suffixes(DF)
+  
   
   # --- Standardize numeric types ---
   DF <- DF %>% 
