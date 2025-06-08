@@ -26,6 +26,7 @@ CAGR_Equity <- function(df){
       cum_dividends = cumsum(coalesce(commonDividendsPaid, 0) + coalesce(preferredDividendsPaid, 0)),
       cum_issued = cumsum(coalesce(commonStockIssuance, 0)),
       cum_repurchased = cumsum(coalesce(commonStockRepurchased, 0)),
+      cum_netIncome = cumsum(coalesce(netIncome, 0)),
       
       # Calculate change in TotalDebt
       totalDebt_interp = na.approx(totalDebt, x = date, na.rm = FALSE),
@@ -35,8 +36,9 @@ CAGR_Equity <- function(df){
       # Calculate full equity using the first value of totalStockholdersEquity
       full_equity = totalStockholdersEquity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased - 
         cum_change_totalDebt,
-      full_equity_noDebt = totalStockholdersEquity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased 
-    ) %>% 
+      full_equity_noDebt = totalStockholdersEquity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased, 
+      full_equity_netIncome = totalStockholdersEquity + cum_netIncome
+      ) %>% 
     ungroup()
   
   # Calculate CAGR
@@ -51,6 +53,9 @@ CAGR_Equity <- function(df){
                                 NA_real_), # Avoid divide-by-zero for the first quarter
       CAGR.full.Equity_noDebt = ifelse(years_elapsed > 0,
                                        (full_equity_noDebt / first_totalStockholdersEquity)^(1 / years_elapsed) - 1,
+                                       NA_real_), # Avoid divide-by-zero for the first quarter
+      CAGR.full.Equity_netIncome = ifelse(years_elapsed > 0,
+                                       (full_equity_netIncome / first_totalStockholdersEquity)^(1 / years_elapsed) - 1,
                                        NA_real_) # Avoid divide-by-zero for the first quarter
       
     ) %>% 
