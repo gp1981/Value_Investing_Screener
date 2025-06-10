@@ -115,6 +115,9 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
   DF <- DF %>% 
     left_join(DF_Shares_Float, by = c("Ticker"))
   
+  DF <- DF %>% 
+    left_join(DF_Ratios, by = c("Ticker"))
+  
   # DF <- DF %>%
   #   group_by(Ticker) %>%
   #   arrange(desc(date), .by_group = TRUE) %>%

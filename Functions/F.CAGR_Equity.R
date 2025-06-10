@@ -36,8 +36,7 @@ CAGR_Equity <- function(df){
       # Calculate full equity using the first value of totalStockholdersEquity
       full_equity = totalStockholdersEquity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased - 
         cum_change_totalDebt,
-      full_equity_noDebt = totalStockholdersEquity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased, 
-      full_equity_netIncome = totalStockholdersEquity + cum_netIncome
+      full_equity_noDebt = totalStockholdersEquity + (-1) * cum_dividends - cum_issued + (-1) * cum_repurchased
       ) %>% 
     ungroup()
   
@@ -46,8 +45,11 @@ CAGR_Equity <- function(df){
     group_by(Ticker) %>% 
     arrange(date) %>% # Ensure data is sorted by date  
     mutate(
-      first_totalStockholdersEquity = first(totalStockholdersEquity), # Full equity at the first quarter
+      first_totalStockholdersEquity = first(totalStockholdersEquity), # Equity at the first quarter
+      full_equity_netIncome = first_totalStockholdersEquity + cum_netIncome, # Full equity 
+      
       years_elapsed = as.numeric(difftime(date, first(date), units = "days")) / 365.25,
+      
       CAGR.full.Equity = ifelse(years_elapsed > 0,
                                 (full_equity / first_totalStockholdersEquity)^(1 / years_elapsed) - 1,
                                 NA_real_), # Avoid divide-by-zero for the first quarter
