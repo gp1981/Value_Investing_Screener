@@ -19,11 +19,13 @@ marketCap_limit_lower_M <- 1000
 # Upper limit market cap for Magic Formula
 marketCap_limit_upper_M <- 20000
 # Market cap steps to retrieve data from magic formula
-marketCap_step <- 100
+marketCap_step <- 1000
 
 # 03 - API Download  ----
 # Store the API key securely (you only need to do this once)
 # keyring::key_set("API_FMP_KEY")
+# keyring::key_set("MF_username")
+# keyring::key_set("MF_password")
 
 # Retrieve the API key
 API_Key <- keyring::key_get("API_FMP_KEY")
