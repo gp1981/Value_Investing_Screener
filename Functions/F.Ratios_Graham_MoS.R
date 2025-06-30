@@ -61,9 +61,9 @@ Ratios_Graham_MoS <- function(DF) {
   
   DF <- DF %>%
     mutate(
-      MoS = Liq.Value.per.Share * outstandingShares - marketCap,
-      MoS_Ratio = (Liq.Value.per.Share  * outstandingShares) / marketCap - 1,
-      Price_over_Net.Book.Value = marketCap / (Net.Book.Value.per.Share * outstandingShares)
+      MoS = Liq.Value.per.Share * outstandingShares - marketCap_EY_ROC,
+      MoS_Ratio = (Liq.Value.per.Share  * outstandingShares) / marketCap_EY_ROC - 1,
+      Price_over_Net.Book.Value = marketCap_EY_ROC / (Net.Book.Value.per.Share * outstandingShares)
     )
   
   

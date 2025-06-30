@@ -53,8 +53,7 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
     group_by(Ticker) %>% 
     arrange(desc(date)) %>% 
     mutate(
-      marketCap = ifelse(row_number() == 1, marketCap_Profile, marketCap_TTM),
-      enterpriseValue = ifelse(row_number() == 1, enterpriseValue_EV, enterpriseValueTTM)
+      marketCap_EY_ROC = ifelse(row_number() == 1, marketCap_LocalFX_Profile, marketCap_LocalFX_KM_TTM),
       )
   
   DF <- DF %>% 
@@ -62,7 +61,7 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
       Tangible_Equity_book = totalAssets - totalLiabilities - 
         goodwillAndIntangibleAssets,
       
-      Equity_Net_Premium = marketCap - Tangible_Equity_book,
+      Equity_Net_Premium = marketCap_EY_ROC - Tangible_Equity_book,
       
       Equity_Net_premiumToFCF= Equity_Net_Premium / FCF.4FQ,
       
@@ -71,19 +70,22 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
       
       Tangible.Capital.Employed = (totalAssets - otherCurrentAssets
                                    - goodwillAndIntangibleAssets -
-                                     otherNonCurrentAssets - Excess.Cash) -
-        (totalCurrentLiabilities - shortTermDebt -
-           deferredRevenue - 0.5*otherCurrentLiabilities),
+                                     otherNonCurrentAssets - 
+                                     otherAssets - Excess.Cash) -
+        (totalCurrentLiabilities - 
+           capitalLeaseObligationsCurrent - 
+           otherCurrentLiabilities -
+           shortTermDebt),
       
       Return.On.Capital = EBIT.4FQ / Tangible.Capital.Employed,
       
       Net.Interest.Bearing.Debt = totalDebt + capitalLeaseObligations,
       
-      Enterprise.Value.Greenblatt = marketCap + Net.Interest.Bearing.Debt 
+      Enterprise.Value.Greenblatt = marketCap_EY_ROC + Net.Interest.Bearing.Debt 
       + minorityInterest + preferredStock,
       
-      Enterprise.Value.IGVI.Op.Assets = marketCap + totalLiabilities - goodwillAndIntangibleAssets -
-        Excess.Cash - 0.5* (otherCurrentAssets + otherNonCurrentAssets),
+      Enterprise.Value.IGVI.Op.Assets = marketCap_EY_ROC + totalLiabilities - goodwillAndIntangibleAssets -
+        Excess.Cash,
       
       Earnings.Yield.Greenblatt = EBIT.4FQ / Enterprise.Value.Greenblatt,
       

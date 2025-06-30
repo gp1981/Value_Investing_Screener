@@ -26,7 +26,7 @@ Add_Top_Greenblatt <- function(df, last_business_date, marketCap_limit_lower_M, 
     left_join(df1, by = "Ticker")
 
   df2 <- df2 %>% 
-    mutate(marketCap_M = marketCap / 1e06,
+    mutate(marketCap_MUSD = marketCap_USD_Profile / 1e06,
            MF_Threshold_marketCap_M = MF_threshold_marketCap) %>% 
     select(Ticker,date, price, MF_TopGreenblatt, MF_Threshold_marketCap_M, -MF_threshold_marketCap,
           everything())

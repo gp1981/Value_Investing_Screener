@@ -106,7 +106,7 @@ OwnerEarnings <- function(df){
       
       Owner.Earnings.IGVI.per.Share.TTM = Owner.Earnings.IGVI.TTM / outstandingShares,
       
-      marketCap.per.Share = marketCap / outstandingShares
+      marketCap.per.Share_LocalFX = marketCap_EY_ROC / outstandingShares
       
     ) %>% 
     ungroup()

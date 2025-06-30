@@ -12,17 +12,41 @@
 
 API_Profile <- function(Stock_List_data, API_Key, countries) {
   
-  # Base URL for API calls
+  # Base URLs
   API_Profile_path_base <- 'https://financialmodelingprep.com/stable/profile?symbol='
+  FX_base <- 'https://financialmodelingprep.com/stable/quote-short?symbol='
   
-  # Initialize a list to store profile data
+  # Initialize variables
   Profile_list <- list()
-  
   total_stocks <- length(Stock_List_data$Ticker)
   i <- 1
   
+  # Step 1: Fetch exchange rates only for non-USD currencies
+  unique_currencies <- unique(Stock_List_data$reportingCurrency)
+  non_usd_currencies <- unique_currencies[unique_currencies != "USD"]
+  
+  # Fetch FX rates
+  fx_rates <- list()
+  for (cur in non_usd_currencies) {
+    fx_url <- paste0(FX_base, cur, 'USD&apikey=', API_Key)
+    tryCatch({
+      fx_data <- fromJSON(fx_url)
+      if (length(fx_data) > 0) {
+        fx_rates[[cur]] <- as.numeric(fx_data$price)
+      } else {
+        fx_rates[[cur]] <- NA
+      }
+    }, error = function(e) {
+      message(paste("Error fetching FX for", cur, ":", e$message))
+      fx_rates[[cur]] <- NA
+    })
+  }
+  
+  # Add 1.0 for USD
+  fx_rates[["USD"]] <- 1.0
+  
   # Define a function to process each ticker
-  process_ticker <- function(ticker) {
+  process_ticker <- function(ticker, currency) {
     cat("Processing Profile", ticker, "-", round(i / total_stocks * 100, 1), "% complete\n")
     
     # Construct API URL for the current ticker
@@ -36,7 +60,16 @@ API_Profile <- function(Stock_List_data, API_Key, countries) {
       # Retrieve Profile
       Stock_Profile_temp <- fromJSON(API_Profile_path)
       if (length(Stock_Profile_temp) > 0) {
-        result$Profile <- data.frame(Stock_Profile_temp)
+        profile_df <- data.frame(Stock_Profile_temp)
+        profile_df$reportingCurrency <- currency
+        fx_rate <- fx_rates[[currency]]
+        profile_df$fx_rate <- fx_rate
+        profile_df$marketCap_LocalFX_Profile <- if (!is.null(profile_df$marketCap) && !is.na(fx_rate)) {
+          profile_df$marketCap / fx_rate
+        } else {
+          NA
+        }
+        result$Profile <- profile_df
       }
     }, error = function(cond) {
       message(paste("API provided an error for this Ticker:", ticker))
@@ -53,8 +86,11 @@ API_Profile <- function(Stock_List_data, API_Key, countries) {
     return(result)
   }
   
-  # Use lapply to process all tickers
-  results <- lapply(Stock_List_data$Ticker, process_ticker)
+  # Use mapply to include currency info per ticker
+  results <- mapply(function(t, c) process_ticker(t, c), 
+                    Stock_List_data$Ticker, 
+                    Stock_List_data$reportingCurrency, 
+                    SIMPLIFY = FALSE)
   
   # Flatten the list of dataframes and combine them into one
   flattened_results <- lapply(results, function(x) x$Profile)

@@ -13,26 +13,26 @@ Multipliers <- function(df){
   
   df <- df %>%
     mutate(
-      MarketCap_over_EV_IGVI.Op.Assets = marketCap_EV / Enterprise.Value.IGVI.Op.Assets,
-      MarketCap_over_EV = marketCap_EV / enterpriseValue_EV,
+      MarketCap_over_EV_IGVI.Op.Assets = marketCap_EY_ROC / Enterprise.Value.IGVI.Op.Assets,
+      MarketCap_over_EV = marketCap_EY_ROC / enterpriseValue_EV,
       
       Debt_over_EV_IGVI.Op.Assets = totalDebt / Enterprise.Value.IGVI.Op.Assets,
-      Debt_over_EV = totalDebt / enterpriseValue_EV,
+      Debt_over_EV = totalDebt / enterpriseValueTTM_LocalFX_KM_TTM,
       
       CurrentAssets_over_EV_IGVI.Op.Assets = totalCurrentAssets / Enterprise.Value.IGVI.Op.Assets,
-      CurrentAssets_over_EV = totalCurrentAssets / enterpriseValue_EV,
+      CurrentAssets_over_EV = totalCurrentAssets / enterpriseValueTTM_LocalFX_KM_TTM,
       
       NonCurrentAssets_over_EV_IGVI.Op.Assets = totalNonCurrentAssets / Enterprise.Value.IGVI.Op.Assets,
-      NonCurrentAssets_over_EV = totalNonCurrentAssets / enterpriseValue_EV,
+      NonCurrentAssets_over_EV = totalNonCurrentAssets / enterpriseValueTTM_LocalFX_KM_TTM,
       
       TotalAssets_over_EV_IGVI.Op.Assets = totalAssets / Enterprise.Value.IGVI.Op.Assets,
-      totalAssets_over_EV = totalAssets / enterpriseValue_EV,
+      totalAssets_over_EV = totalAssets / enterpriseValueTTM_LocalFX_KM_TTM,
       
       ExcessCash_over_EV_IGVI.Op.Assets = Excess.Cash / Enterprise.Value.IGVI.Op.Assets,
-      ExcessCash_over_EV = Excess.Cash / enterpriseValue_EV,
+      ExcessCash_over_EV = Excess.Cash / enterpriseValueTTM_LocalFX_KM_TTM,
       
       NetWorkingCapital_over_EV_IGVI.Op.Assets = Net.Working.Capital / Enterprise.Value.IGVI.Op.Assets,
-      NetWorkingCapital_over_EV = Net.Working.Capital / enterpriseValue_EV
+      NetWorkingCapital_over_EV = Net.Working.Capital / enterpriseValueTTM_LocalFX_KM_TTM
     ) 
 
   
