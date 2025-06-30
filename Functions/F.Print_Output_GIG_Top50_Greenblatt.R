@@ -29,11 +29,13 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
       TRUE ~ "RED"
     )) %>% 
     
-    mutate(Enterprise.Value.IGVI.Op.Assets_M = Enterprise.Value.IGVI.Op.Assets / 1000000) %>%
+    mutate(Enterprise.Value.IGVI.Op.Assets_M = Enterprise.Value.IGVI.Op.Assets / 1000000,
+           price_USD = price) %>%
     relocate(Enterprise.Value.IGVI.Op.Assets, .after = last_col()) %>% 
   
     select(Output, Outlier.Revenue.ZScore, MF_TopGreenblatt, MF_Threshold_marketCap_M, Ticker, companyName, 
-           country, price, marketCap_M,ID_Rank.Combined.EY_ROC.Greenblatt,Enterprise.Value.IGVI.Op.Assets_M,
+           country, price_USD, marketCap_MUSD, reportedCurrency,
+           ID_Rank.Combined.EY_ROC.Greenblatt,Enterprise.Value.IGVI.Op.Assets_M,
            Earnings.Yield.Greenblatt, Return.On.Capital, Earning.Power.per.Share.TTM,
            Owner.Earnings.Buffet.per.Share.TTM, Owner.Earnings.Buffet.IGVI.per.Share.TTM, 
            Owner.Earnings.IGVI.per.Share.TTM, priceToEarningsRatioTTM, priceToBookRatioTTM, 
@@ -41,7 +43,7 @@ Print_Output_GIG_Top50_Greenblatt <- function(df) {
            Equity_Net_premiumToFCF, debtToEquityRatioTTM, Capital.Structure.E_over_D, 
            debtToAssetsRatioTTM, Capital.Structure.D_over_A, longTermDebtToCapitalRatioTTM, Acid.ratio_Cash, 
            quickRatioTTM, currentRatioTTM, Net.Book.Value.per.Share, Net.Current.Asset.Value.per.Share,
-           Net.Cash.Asset.Value.per.Share, Liq.Value.per.Share,  MoS_Ratio, everything()) %>% 
+           Net.Cash.Asset.Value.per.Share, Liq.Value.per.Share,  MoS_Ratio, marketCap_LocalFX_Profile, everything()) %>% 
     arrange(ID_Rank.Combined.EY_ROC.Greenblatt)
   
   # 02 - Prepare output -----------------------------------------------------

@@ -157,11 +157,19 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   BS <- bind_rows(lapply(results, function(x) x$BS))
   CF <- bind_rows(lapply(results, function(x) x$CF))
   KeyMetrics_TTM <- bind_rows(lapply(results, function(x) x$KM_TTM))
-  KeyMetrics <- bind_rows(lapply(results, function(x) x$KM))
+  KeyMetrics_TTM <- KeyMetrics_TTM %>% rename(marketCap_LocalFX_KM_TTM = marketCap)
+  KeyMetrics_TTM <- KeyMetrics_TTM %>% rename(enterpriseValueTTM_LocalFX_KM_TTM = enterpriseValueTTM)
+  
+  KeyMetrics <- bind_rows(lapply(results, function(x) x$KM)) 
+  KeyMetrics <- KeyMetrics %>% rename(marketCap_LocalFX_KM = marketCap)
+  KeyMetrics <- KeyMetrics %>% rename(enterpriseValueTTM_LocalFX_KM = enterpriseValue)
+  
   Ratios_TTM  <- bind_rows(lapply(results, function(x) x$Ratios_TTM))
   Ratios  <- bind_rows(lapply(results, function(x) x$Ratios))
   Shares_Float  <- bind_rows(lapply(results, function(x) x$Shares_Float))
   EV  <- bind_rows(lapply(results, function(x) x$EV))
+  EV <- EV %>% rename(marketCapitalization_EV = marketCapitalization)
+  EV <- EV %>% rename(enterpriseValue_EV = enterpriseValue)
   
   # Rename column "symbol" to "Ticker" for consistency
   if ("symbol" %in% colnames(IS)) {
@@ -206,8 +214,6 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   } else if ("symbol" %in% colnames(EV)) {
     EV <- EV %>% rename(Ticker = symbol)
   }
-  
-  EV <- EV %>%  rename(marketCap = marketCapitalization)
   
   FinancialsMetricsProfile <- list(
     IncomeStatement = IS,
