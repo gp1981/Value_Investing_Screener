@@ -13,8 +13,8 @@ Multipliers <- function(df){
   
   df <- df %>%
     mutate(
-      MarketCap_over_EV_IGVI.Op.Assets = marketCap_EY_ROC / Enterprise.Value.IGVI.Op.Assets,
-      MarketCap_over_EV = marketCap_EY_ROC / enterpriseValue_EV,
+      MarketCap_over_EV_IGVI.Op.Assets = marketCap_LocalFX / Enterprise.Value.IGVI.Op.Assets,
+      MarketCap_over_EV = marketCap_LocalFX / enterpriseValue_EV,
       
       Debt_over_EV_IGVI.Op.Assets = totalDebt / Enterprise.Value.IGVI.Op.Assets,
       Debt_over_EV = totalDebt / enterpriseValueTTM_LocalFX_KM_TTM,

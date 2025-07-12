@@ -100,7 +100,6 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
       Stock_KeyMetrics_temp_TTM <- fromJSON(API_KeyMetrics_TTM_path)
       if (length(Stock_KeyMetrics_temp_TTM) > 0) {
         result$KM_TTM <- data.frame(Stock_KeyMetrics_temp_TTM)
-        result$KM_TTM$Ticker <- ticker  # Add ticker column
       }
       
       # Retrieve Key Metrics
@@ -113,7 +112,6 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
       Stock_Ratios_temp_TTM <- fromJSON(API_Ratios_TTM_path)
       if (length(Stock_Ratios_temp_TTM) > 0) {
         result$Ratios_TTM <- data.frame(Stock_Ratios_temp_TTM)
-        result$Ratios_TTM$Ticker <- ticker  # Add ticker column
       }
       
       # Retrieve Ratios
@@ -156,6 +154,7 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   IS <- bind_rows(lapply(results, function(x) x$IS))
   BS <- bind_rows(lapply(results, function(x) x$BS))
   CF <- bind_rows(lapply(results, function(x) x$CF))
+  
   KeyMetrics_TTM <- bind_rows(lapply(results, function(x) x$KM_TTM))
   KeyMetrics_TTM <- KeyMetrics_TTM %>% rename(marketCap_LocalFX_KM_TTM = marketCap)
   KeyMetrics_TTM <- KeyMetrics_TTM %>% rename(enterpriseValueTTM_LocalFX_KM_TTM = enterpriseValueTTM)
@@ -167,51 +166,45 @@ API_QFMP <- function(Stock_List_data,API_Key, period, period_limit) {
   Ratios_TTM  <- bind_rows(lapply(results, function(x) x$Ratios_TTM))
   Ratios  <- bind_rows(lapply(results, function(x) x$Ratios))
   Shares_Float  <- bind_rows(lapply(results, function(x) x$Shares_Float))
+  
   EV  <- bind_rows(lapply(results, function(x) x$EV))
-  EV <- EV %>% rename(marketCapitalization_EV = marketCapitalization)
-  EV <- EV %>% rename(enterpriseValue_EV = enterpriseValue)
+  EV <- EV %>% rename(marketCapitalization_EV_LocalFX_EV = marketCapitalization)
+  EV <- EV %>% rename(enterpriseValue_EV_LocalFX_EV = enterpriseValue)
   
   # Rename column "symbol" to "Ticker" for consistency
   if ("symbol" %in% colnames(IS)) {
     IS <- IS %>% rename(Ticker = symbol)
   }
+  
   if ("symbol" %in% colnames(BS)) {
     BS <- BS %>% rename(Ticker = symbol)
   }
+  
   if ("symbol" %in% colnames(CF)) {
     CF <- CF %>% rename(Ticker = symbol)
   }
-  if (all(c("symbol", "Ticker") %in% colnames(KeyMetrics_TTM))) {
-    KeyMetrics_TTM <- KeyMetrics_TTM %>% select(-symbol)
-  } else if ("symbol" %in% colnames(KeyMetrics_TTM)) {
+  
+  if ("symbol" %in% colnames(KeyMetrics_TTM)) {
     KeyMetrics_TTM <- KeyMetrics_TTM %>% rename(Ticker = symbol)
-  }
-  if (all(c("symbol", "Ticker") %in% colnames(KeyMetrics))) {
-    KeyMetrics <- KeyMetrics %>% select(-symbol)
-  } else if ("symbol" %in% colnames(KeyMetrics)) {
+  } 
+  
+  if ("symbol" %in% colnames(KeyMetrics)) {
     KeyMetrics <- KeyMetrics %>% rename(Ticker = symbol)
   }
-  if (all(c("symbol", "Ticker") %in% colnames(Ratios_TTM))) {
-    Ratios_TTM <- Ratios_TTM %>% select(-symbol)
-  } else if ("symbol" %in% colnames(Ratios_TTM)) {
+  
+  if ("symbol" %in% colnames(Ratios_TTM)) {
     Ratios_TTM <- Ratios_TTM %>% rename(Ticker = symbol)
   }
-  if (all(c("symbol", "Ticker") %in% colnames(Ratios))) {
-    Ratios <- Ratios %>% select(-symbol)
-  } else if ("symbol" %in% colnames(Ratios)) {
-    Ratios <- Ratios %>% rename(Ticker = symbol)
-  }
+ 
   if ("symbol" %in% colnames(Ratios)) {
     Ratios <- Ratios %>% rename(Ticker = symbol)
   }
-  if (all(c("symbol", "Ticker") %in% colnames(Shares_Float))) {
-    Shares_Float <- Shares_Float %>% select(-symbol)
-  } else if ("symbol" %in% colnames(Shares_Float)) {
+  
+ if ("symbol" %in% colnames(Shares_Float)) {
     Shares_Float <- Shares_Float %>% rename(Ticker = symbol)
-  }
-  if (all(c("symbol", "Ticker") %in% colnames(EV))) {
-    EV <- EV %>% select(-symbol)
-  } else if ("symbol" %in% colnames(EV)) {
+ }
+  
+ if ("symbol" %in% colnames(EV)) {
     EV <- EV %>% rename(Ticker = symbol)
   }
   
