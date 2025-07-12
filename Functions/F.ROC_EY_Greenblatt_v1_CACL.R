@@ -48,20 +48,21 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
     ungroup()
   
   # 03 - Calculate EY and ROC -----------------------------------------
-  # Replace the first row value
-  DF <- DF %>%
+  
+  # Replace the first raw value
+  DF <- DF %>% 
     group_by(Ticker) %>% 
     arrange(desc(date)) %>% 
-    mutate(
-      marketCap_EY_ROC = ifelse(row_number() == 1, marketCap_LocalFX_Profile, marketCap_LocalFX_KM_TTM),
+      mutate(
+      marketCap_LocalFX = ifelse(row_number() == 1, marketCap_USD_Profile/FX_rates, marketCapitalization_EV_LocalFX_EV)
       )
-  
+
   DF <- DF %>% 
     mutate(
       Tangible_Equity_book = totalAssets - totalLiabilities - 
         goodwillAndIntangibleAssets,
       
-      Equity_Net_Premium = marketCap_EY_ROC - Tangible_Equity_book,
+      Equity_Net_Premium = marketCap_LocalFX - Tangible_Equity_book,
       
       Equity_Net_premiumToFCF= Equity_Net_Premium / FCF.4FQ,
       
@@ -81,10 +82,10 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
       
       Net.Interest.Bearing.Debt = totalDebt + capitalLeaseObligations,
       
-      Enterprise.Value.Greenblatt = marketCap_EY_ROC + Net.Interest.Bearing.Debt 
+      Enterprise.Value.Greenblatt = marketCap_LocalFX  + Net.Interest.Bearing.Debt 
       + minorityInterest + preferredStock,
       
-      Enterprise.Value.IGVI.Op.Assets = marketCap_EY_ROC + totalLiabilities - goodwillAndIntangibleAssets -
+      Enterprise.Value.IGVI.Op.Assets = marketCap_LocalFX + totalLiabilities - goodwillAndIntangibleAssets -
         Excess.Cash,
       
       Earnings.Yield.Greenblatt = EBIT.4FQ / Enterprise.Value.Greenblatt,
@@ -100,7 +101,7 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
   
   
   # 05 - Prepare output -----------------------------------------------------
- 
+  
   DF <- select(DF,Ticker,date,
                Earnings.Yield.Greenblatt,
                Enterprise.Value.IGVI.Op.Assets,

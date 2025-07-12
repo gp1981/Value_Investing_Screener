@@ -10,7 +10,7 @@
 source('Functions/Setup.R')         # Sourcing necessary libraries
 
 # 02 - Inputs required ----
-last_business_date <-as.Date("2025-07-04") # update here the last business date 
+last_business_date <-as.Date("2025-07-11") # update here the last business date 
 period <- "quarter"
 period_limit <- 48
 date_filename <- gsub("-", "", last_business_date)
@@ -30,12 +30,13 @@ marketCap_step <- 1000
 # Retrieve the API key
 API_Key <- keyring::key_get("API_FMP_KEY")
 Stock_List_data<-API_StockList(API_Key)
+FX_rates_USD_df <- API_FX_rate(API_Key)
 
 ## 03.1 - Export stock list ----
 Export_excel_StockList_data(Stock_List_data)
 
 ## 03.2 - Retrieve companies details and filter companies suitable for Magic Formula ----
-Stock_List_data <- API_Profile(Stock_List_data, API_Key)
+Stock_List_data_df <- API_Profile(Stock_List_data, API_Key)
 save(Stock_List_data, file = paste0("Output/Data/Stock_List_data_", date_filename, ".RData"), compress = "bzip2")
 country <- c("US", "CA", "EU", "GB")
 Stock_List_data <- MF_Filter(Stock_List_data, country, marketCap_limit_lower_M)
@@ -46,7 +47,7 @@ save(FinancialsMetricsProfile, file = paste0("Output/Data/", date_filename, ".RD
 
 # 04 - Greenblatt's ranking Calculation ----
 ## 04.1 - Aggregate stock fundamentals datatables ----
-ROC_EY_v1_CACL <- Reduce_FinancialsMetricsProfile(FinancialsMetricsProfile)
+ROC_EY_v1_CACL <- Reduce_FinancialsMetricsProfile(FinancialsMetricsProfile, FX_rates_USD_df)
 
 ## 04.2 - Calculate Greenblatt ranking ----
 ROC_EY_v1_CACL <- ROC_EY_Greenblatt_v1_CACL(ROC_EY_v1_CACL)

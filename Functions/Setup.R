@@ -18,6 +18,7 @@ for (package in packages) {
 }
 
 # 02 - Functions to source ----
+source('Functions/F.API_FX_rate.R')
 source('Functions/F.API_StockList.R')
 source('Functions/F.API_StockList_US.R')
 source('Functions/F.API_QFMP.R')

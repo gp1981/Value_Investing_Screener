@@ -3,7 +3,7 @@
 # Purpose: Reduce the list "FinancialsMetricsProfile" and remove columns with suffixes ".1", ".2", ".x", ".y" that are duplicates or wrong matches
 # Disclaimer: This code is provided as-is without any guarantees or warranties. Use at your own risk.
 
-Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
+Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile, FX_rates_USD_df) {
   
   # Helper function
   clean_joins <- function(df) {
@@ -57,17 +57,14 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     )
   }
   
-  if ("marketCap" %in% names(DF_Profile)) {
-    DF_Profile <- DF_Profile %>% rename(
-      marketCap_USD_Profile = marketCap
-    )
+  if ("marketCap" %in% names(DF_Profile) && all(DF_Profile$currency == "USD")) {
+    DF_Profile <- DF_Profile %>%
+      rename(marketCap_USD_Profile = marketCap)
+  } else if ("marketCap" %in% names(DF_Profile)) {
+    DF_Profile <- DF_Profile %>%
+      rename(marketCap_LocalFX_Profile = marketCap)
   }
   
-  if ("date" %in% names(DF_Shares_Float)) {
-    DF_Shares_Float <- DF_Shares_Float %>% rename(
-      share_float_date = date
-    )
-  }
   
   # --- Merge TTM values ---
   DF_TTM <- DF_Profile %>%
@@ -117,5 +114,14 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile) {
     mutate(across(where(is.integer), as.numeric)) %>%
     mutate(outstandingShares = as.numeric(outstandingShares)) %>%
     mutate(outstandingShares = if_else(is.na(outstandingShares), weightedAverageShsOutDil, outstandingShares))
+  
+  # --- Add FX rates ---
+  # 1) build the cross‑currency key, e.g. "EURUSD"
+  DF <- DF %>% mutate(FX_rate_symbol = paste0(reportedCurrency, currency))
+    
+  # 2) bring in the matching FX rate and give the rate column a clearer name
+  DF <- DF %>% left_join(FX_rates_USD_df, by = c("FX_rate_symbol" = "fx_symbol")) %>% 
+    rename(FX_rates = value)
+  
   return(DF)
 }
