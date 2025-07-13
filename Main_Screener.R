@@ -36,7 +36,7 @@ FX_rates_USD_df <- API_FX_rate(API_Key)
 Export_excel_StockList_data(Stock_List_data)
 
 ## 03.2 - Retrieve companies details and filter companies suitable for Magic Formula ----
-Stock_List_data_df <- API_Profile(Stock_List_data, API_Key)
+Stock_List_data <- API_Profile(Stock_List_data, API_Key)
 save(Stock_List_data, file = paste0("Output/Data/Stock_List_data_", date_filename, ".RData"), compress = "bzip2")
 country <- c("US", "CA", "EU", "GB")
 Stock_List_data <- MF_Filter(Stock_List_data, country, marketCap_limit_lower_M)
