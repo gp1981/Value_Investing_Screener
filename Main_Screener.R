@@ -10,7 +10,7 @@
 source('Functions/Setup.R')         # Sourcing necessary libraries
 
 # 02 - Inputs required ----
-last_business_date <-as.Date("2025-07-11") # update here the last business date 
+last_business_date <-as.Date("2025-08-09") # update here the last business date 
 period <- "quarter"
 period_limit <- 48
 date_filename <- gsub("-", "", last_business_date)
@@ -31,6 +31,7 @@ marketCap_step <- 1000
 API_Key <- keyring::key_get("API_FMP_KEY")
 Stock_List_data<-API_StockList(API_Key)
 FX_rates_USD_df <- API_FX_rate(API_Key)
+save(FX_rates_USD_df, file = paste0("Output/Data/FX_rates_USD_df_", date_filename, ".RData"), compress = "bzip2")
 
 ## 03.1 - Export stock list ----
 Export_excel_StockList_data(Stock_List_data)

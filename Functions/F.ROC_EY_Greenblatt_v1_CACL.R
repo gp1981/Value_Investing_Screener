@@ -69,21 +69,18 @@ ROC_EY_Greenblatt_v1_CACL <- function(DF) {
       Net.Working.Capital = totalCurrentAssets - Excess.Cash
       - (totalCurrentLiabilities - shortTermDebt),
       
-      Tangible.Capital.Employed = (totalAssets - otherCurrentAssets
-                                   - goodwillAndIntangibleAssets -
-                                     otherNonCurrentAssets - 
-                                     otherAssets - Excess.Cash) -
+      Tangible.Capital.Employed = (totalAssets
+                                   - goodwillAndIntangibleAssets
+                                   - Excess.Cash) -
         (totalCurrentLiabilities - 
            capitalLeaseObligationsCurrent - 
-           otherCurrentLiabilities -
            shortTermDebt),
       
       Return.On.Capital = EBIT.4FQ / Tangible.Capital.Employed,
       
-      Net.Interest.Bearing.Debt = totalDebt + capitalLeaseObligations,
+      Net.Interest.Bearing.Debt = totalDebt ,
       
-      Enterprise.Value.Greenblatt = marketCap_LocalFX  + Net.Interest.Bearing.Debt 
-      + minorityInterest + preferredStock,
+      Enterprise.Value.Greenblatt = marketCap_LocalFX  + Net.Interest.Bearing.Debt - Excess.Cash,
       
       Enterprise.Value.IGVI.Op.Assets = marketCap_LocalFX + totalLiabilities - goodwillAndIntangibleAssets -
         Excess.Cash,
