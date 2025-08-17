@@ -5,7 +5,7 @@
 
 # Import required libraries
 packages <- c("httr","jsonlite","tidyverse", "openxlsx", "lubridate","tidyquant",
-              "ggthemes","ggplot2","openxlsx","dplyr","zoo","ggpubr","foreach", "progress",
+              "ggthemes","ggplot2", "dplyr","zoo","ggpubr","foreach", "progress",
               "plotly", "keyring")
 
 for (package in packages) {

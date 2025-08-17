@@ -77,6 +77,7 @@ DF_last_FQ_G <- Add_Top_Greenblatt(DF_last_FQ, last_business_date, marketCap_lim
 ## 05.2 - Prepare output and export files ----
 DF_last_FQ_Output_GIG_Full_List_Greenblatt <- Print_Output_GIG_Top50_Greenblatt(DF_last_FQ_G)
 DF_last_FQ_GIG_Performance  <- Screener_Performance(DF_last_FQ_Output_GIG_Full_List_Greenblatt)
+DF_last_FQ_GIG_Performance
 Export_excel_DF_output(DF_last_FQ_Output_GIG_Full_List_Greenblatt,DF_last_FQ_GIG_Performance)
 
 # 06 - Visualize statistics ----
