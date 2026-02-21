@@ -57,13 +57,14 @@ Reduce_FinancialsMetricsProfile <- function(FinancialsMetricsProfile, FX_rates_U
     )
   }
   
-  if ("marketCap" %in% names(DF_Profile) && all(DF_Profile$currency == "USD")) {
-    DF_Profile <- DF_Profile %>%
-      rename(marketCap_USD_Profile = marketCap)
-  } else if ("marketCap" %in% names(DF_Profile)) {
-    DF_Profile <- DF_Profile %>%
-      rename(marketCap_LocalFX_Profile = marketCap)
-  }
+  DF_Profile <- DF_Profile %>%
+    mutate(
+      # Create USD column: only populated if currency is USD
+      marketCap_USD_Profile = ifelse(currency == "USD", marketCap, NA),
+      
+      # Create LocalFX column: only populated if currency is NOT USD
+      marketCap_LocalFX_Profile = ifelse(currency != "USD", marketCap, NA)
+    )
   
   
   # --- Merge TTM values ---
